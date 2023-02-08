@@ -4,7 +4,7 @@
 #include "MegaCAN.h"
 
 const int kCanBaud = 500000;    // CAN baud rate
-const uint32_t kBaseID = 1520;  // Must set to match Megasquirt Settings!
+const uint32_t baseID = 1520;   // This is set in megasquirt (typically 1520)
 
 extern FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 
@@ -13,7 +13,7 @@ MegaCAN_broadcast_message_t bCastMsg;
 
 bool newData = false;
 
-void canMShandler(const CAN_message_t msg)
+void canMShandler(const CAN_message_t &msg)
 {
   if (!msg.flags.extended)
   { 
