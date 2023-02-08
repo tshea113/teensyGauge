@@ -1,1 +1,0 @@
-const int kCanBaud = 500000; // CAN baud rate
