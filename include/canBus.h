@@ -36,10 +36,21 @@ void initializeCAN()
 
 void printData()
 {
-  float MAP = bCastMsg.map;
-  float RPM = bCastMsg.rpm;
-  float TPS = bCastMsg.tps;
-  Serial.print(MAP); Serial.print(" | "); //should be kPa
-  Serial.print(RPM); Serial.print(" | "); //should be rpm
-  Serial.println(TPS);                    //should be %
+  if (newData)
+  {
+    float MAP = bCastMsg.map;
+    float RPM = bCastMsg.rpm;
+    float TPS = bCastMsg.tps;
+    float CLT = bCastMsg.clt;
+    Serial.print(MAP); Serial.print(" | "); //should be kPa
+    Serial.print(RPM); Serial.print(" | "); //should be rpm
+    Serial.print(TPS); Serial.print(" | "); //should be %
+    Serial.println(CLT);                    //should be F
+    newData = false;
+  }
+}
+
+void printHeader()
+{
+  Serial.println("MAP | RPM | TPS | CLT");
 }
