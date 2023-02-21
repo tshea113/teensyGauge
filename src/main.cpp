@@ -3,13 +3,13 @@
 #include "MegaCAN.h"
 
 #include "canBus.h"
+#include "display.h"
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 
 void setup()
 {
-  while (!Serial);
-  Serial.begin(115200);
+  showStartupScreen();
 
   initializeCAN();
   Serial.println("CAN setup!");
