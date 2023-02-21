@@ -13,6 +13,15 @@ MegaCAN_broadcast_message_t bCastMsg;
 
 bool newData = false;
 
+enum GaugeData : int
+{
+  kRPM = 0,
+  kMAP = 1,
+  kMAT = 2,
+  kTPS = 3,
+  kCLT = 4
+};
+
 void canMShandler(const CAN_message_t &msg)
 {
   if (!msg.flags.extended)
@@ -34,23 +43,21 @@ void initializeCAN()
   can.mailboxStatus();
 }
 
-void printData()
+float getGaugeData(GaugeData data)
 {
-  if (newData)
+  switch (data)
   {
-    float MAP = bCastMsg.map;
-    float RPM = bCastMsg.rpm;
-    float TPS = bCastMsg.tps;
-    float CLT = bCastMsg.clt;
-    Serial.print(MAP); Serial.print(" | "); //should be kPa
-    Serial.print(RPM); Serial.print(" | "); //should be rpm
-    Serial.print(TPS); Serial.print(" | "); //should be %
-    Serial.println(CLT);                    //should be F
-    newData = false;
-  }
-}
-
-void printHeader()
-{
-  Serial.println("MAP | RPM | TPS | CLT");
+    case kRPM:
+      return bCastMsg.rpm;
+    case kMAP:
+      return bCastMsg.map;
+    case kMAT:
+      return bCastMsg.mat;
+    case kTPS:
+      return bCastMsg.tps;
+    case kCLT:
+      return bCastMsg.clt;
+    default:
+      return 0;
+  };
 }

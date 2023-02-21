@@ -12,14 +12,13 @@ void setup()
   showStartupScreen();
 
   initializeCAN();
-  Serial.println("CAN setup!");
 
-  printHeader();
+  delay(1000);
 }
 
 void loop()
 {
   can.events();
 
-  printData();
+  displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS), getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP) ,getGaugeData(GaugeData::kCLT));
 }
