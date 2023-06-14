@@ -2,14 +2,20 @@
 #include "MegaCAN.h"
 #include <Arduino.h>
 
+#include "DisplayHandler.h"
 #include "canBus.h"
-#include "display.h"
+
+#define TFT_RST 8
+#define TFT_DC 9
+#define TFT_CS 10
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 
+DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS);
+
 void setup()
 {
-  showStartupScreen();
+  displayHandler.showStartupScreen();
 
   initializeCAN();
 
@@ -20,6 +26,7 @@ void loop()
 {
   can.events();
 
-  displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS), getGaugeData(GaugeData::kMAT),
-              getGaugeData(GaugeData::kMAP), getGaugeData(GaugeData::kCLT));
+  displayHandler.displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS),
+                             getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP),
+                             getGaugeData(GaugeData::kCLT));
 }

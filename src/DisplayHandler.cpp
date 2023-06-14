@@ -1,31 +1,23 @@
-#pragma once
+#include "DisplayHandler.h"
 
-#include "SPI.h"
-#include "Adafruit_GFX.h"
-#include "GC9A01A_t3n.h"
+DisplayHandler::DisplayHandler(int TFT_RST, int TFT_DC, int TFT_CS)
+    : tft(TFT_CS, TFT_DC, TFT_RST) // Hardware SPI on Feather or other boards
+{
+}
 
-#include "memory.h"
-
-#define TFT_RST 8
-#define TFT_DC  9
-#define TFT_CS  10
-
-// Hardware SPI on Feather or other boards
-GC9A01A_t3n tft(TFT_CS, TFT_DC, TFT_RST);
-
-void showStartupScreen()
+void DisplayHandler::showStartupScreen()
 {
   tft.begin();
   tft.fillScreen(BLACK);
   tft.drawBitmap(20, 98, miata_logo, 200, 44, RED);
 }
 
-void displayData(int rpm, int tps, int mat, int map, int clt)
+void DisplayHandler::displayData(int rpm, int tps, int mat, int map, int clt)
 {
   tft.useFrameBuffer(1);
   tft.fillScreen(BLACK);
   tft.setTextSize(2);
-  
+
   tft.setCursor(20, 50);
   tft.print("RPM: ");
   tft.println(rpm);
