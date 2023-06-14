@@ -1,6 +1,6 @@
-#include <Arduino.h>
 #include "FlexCAN_T4.h"
 #include "MegaCAN.h"
+#include <Arduino.h>
 
 #include "canBus.h"
 #include "display.h"
@@ -20,5 +20,6 @@ void loop()
 {
   can.events();
 
-  displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS), getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP) ,getGaugeData(GaugeData::kCLT));
+  displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS), getGaugeData(GaugeData::kMAT),
+              getGaugeData(GaugeData::kMAP), getGaugeData(GaugeData::kCLT));
 }
