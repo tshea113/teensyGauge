@@ -4,7 +4,7 @@
 #include "GC9A01A_t3n.h"
 #include "SPI.h"
 
-#include "memory.h"
+#include "ProgramMemory.h"
 
 class DisplayHandler
 {
