@@ -8,9 +8,6 @@
 
 #include <utility>
 
-const int kScreenWidth = 240;
-const int kScreenHeight = 240;
-
 enum FontSize : int
 {
   kFontSizeSmall = 1,  // Font size 6x8
@@ -21,7 +18,7 @@ enum FontSize : int
 class DisplayHandler
 {
 public:
-  DisplayHandler(int TFT_RST, int TFT_DC, int TFT_CS);
+  DisplayHandler(int TFT_RST, int TFT_DC, int TFT_CS, int screenHeight, int screenWidth);
 
   void displayStartupScreen();
   void displayData(int rpm, int tps, int mat, int map, int clt);
@@ -29,7 +26,9 @@ public:
   void clearScreen();
 
 private:
-  GC9A01A_t3n tft;
+  GC9A01A_t3n _tft;
+  const int _screenWidth;
+  const int _screenHeight;
 
   int getCenterOffset(FontSize fontSize, const String& text) const;
 };
