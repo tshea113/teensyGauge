@@ -16,11 +16,27 @@ bool newData = false;
 enum GaugeData : int
 {
   kRPM = 0,
-  kMAP = 1,
-  kMAT = 2,
-  kTPS = 3,
-  kCLT = 4
+  kAFR = 1,
+  kCLT = 2,
+  kMAP = 3,
+  kMAT = 4,
+  kBoost = 5,
+  kVoltage = 6,
+  kTPS = 7,
+  kKnock = 8,
+  kBarometer = 9,
+  kEGOCorrection = 10,
+  kIAC = 11,
+  kSparkDwell = 12,
+  kBoostDuty = 13,
+  kIdleTarget = 14,
+  kAfrTarget = 15,
+  kTiming = 16
 };
+
+String GaugeLabels[] = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
+                        "Voltage",    "TPS",        "Knock",      "Barometer",  "EGO Corr", "IAC",
+                        "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing"};
 
 void canMShandler(const CAN_message_t& msg)
 {

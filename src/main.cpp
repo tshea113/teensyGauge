@@ -1,9 +1,11 @@
-#include "FlexCAN_T4.h"
-#include "MegaCAN.h"
-#include <Arduino.h>
-
 #include "DisplayHandler.h"
 #include "canBus.h"
+
+#include <Arduino.h>
+#include <FlexCAN_T4.h>
+#include <MegaCAN.h>
+
+#include <utility>
 
 #define TFT_RST 8
 #define TFT_DC 9
@@ -15,18 +17,24 @@ DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS);
 
 void setup()
 {
-  displayHandler.showStartupScreen();
+  displayHandler.displayStartupScreen();
 
   initializeCAN();
 
   delay(1000);
+
+  displayHandler.clearScreen();
 }
 
 void loop()
 {
   can.events();
 
-  displayHandler.displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS),
-                             getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP),
-                             getGaugeData(GaugeData::kCLT));
+  // displayHandler.displayData(getGaugeData(GaugeData::kRPM), getGaugeData(GaugeData::kTPS),
+  //                            getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP),
+  //                            getGaugeData(GaugeData::kCLT));
+
+  std::pair<String, String> data[] = {
+      {"RPM", "88888"}, {"CLT", "888.8"}, {"Boost Duty", "88888"}, {"Voltage", "888.8"}};
+  displayHandler.displayQuad(data);
 }
