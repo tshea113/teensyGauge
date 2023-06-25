@@ -38,7 +38,10 @@ void loop()
   //                            getGaugeData(GaugeData::kMAT), getGaugeData(GaugeData::kMAP),
   //                            getGaugeData(GaugeData::kCLT));
 
-  std::pair<String, String> data[] = {
-      {"RPM", "88888"}, {"CLT", "888.8"}, {"Boost Duty", "88888"}, {"Voltage", "888.8"}};
+  // std::pair<String, String> data[] = {
+  //     {"RPM", "88888"}, {"CLT", "888.8"}, {"Boost Duty", "88888"}, {"Voltage", "888.8"}};
+
+  std::pair<String, String> data[] = {{"RPM", bCastMsg.rpm}, {"CLT", bCastMsg.clt}, {"Boost Duty", bCastMsg.boostduty}, {"MAT", bCastMsg.mat}};
+
   displayHandler.displayQuad(data);
 }
