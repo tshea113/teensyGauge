@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FlexCAN_T4.h"
-#include "MegaCAN.h"
+#include <FlexCAN_T4.h>
+#include <MegaCAN.h>
 
 enum GaugeData : int
 {
@@ -24,8 +24,6 @@ enum GaugeData : int
   kTiming = 16
 };
 
-constexpr int kCanBaud = 500000; // CAN baud rate
-
 const String GaugeLabels[] = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
                               "Voltage",    "TPS",        "Knock",      "Barometer",  "EGO Corr", "IAC",
                               "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing"};
@@ -33,11 +31,17 @@ const String GaugeLabels[] = {"RPM",        "AFR",        "Coolant",    "MAP",  
 class CanDataHandler
 {
 public:
-  CanDataHandler();
+  CanDataHandler(const int& canBaud, FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16>& can);
 
-  void initializeCAN();
   float getGaugeData(GaugeData data);
 
+  static void canMShandler(const CAN_message_t& msg);
+  static void setNewData(bool newData);
+  static bool getNewData();
+
 private:
-  MegaCAN_broadcast_message_t _canData;
+  static bool _newData;
+
+  static MegaCAN _mega_can;
+  static MegaCAN_broadcast_message_t _bCastMsg;
 };
