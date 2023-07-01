@@ -2,7 +2,7 @@
 #include "MegaCAN.h"
 #include <Arduino.h>
 
-#include "canBus.h"
+#include "CanDataHandler.h"
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 
@@ -12,15 +12,15 @@ void setup()
     ;
   Serial.begin(115200);
 
-  initializeCAN();
+  // initializeCAN();
   Serial.println("CAN setup!");
 
-  printHeader();
+  // printHeader();
 }
 
 void loop()
 {
   can.events();
 
-  printData();
+  // printData();
 }
