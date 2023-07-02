@@ -39,6 +39,7 @@ float CanDataHandler::getGaugeData(GaugeData data)
   };
 }
 
+// Routine used by FlexCAN for retrieving the received CAN data.
 void CanDataHandler::canMShandler(const CAN_message_t& msg)
 {
   if (!msg.flags.extended)
