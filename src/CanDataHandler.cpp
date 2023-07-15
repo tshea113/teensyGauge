@@ -47,6 +47,7 @@ void CanDataHandler::canMShandler(const CAN_message_t& msg)
     // broadcast data from MS does not use extended flag, therefore this should be broadcast data from MS
     _mega_can.getBCastData(msg.id, msg.buf, _bCastMsg);
     _newData = true;
+    digitalWrite(LED_BUILTIN, HIGH); // TODO: debug code remove this when screen works
   }
 }
 
