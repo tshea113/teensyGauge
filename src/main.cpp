@@ -16,6 +16,7 @@
 const int kCanBaud = 500000;
 
 CanDataHandler canDataHandler;
+DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
 
 // TODO: this is debug stuff remove later
 void printData(bool& newData, const float& map, const float& rpm, const float& tps, const float& clt)
@@ -40,8 +41,6 @@ void printHeader()
   Serial.println("MAP | RPM | TPS | CLT");
 }
 
-DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
-
 void setup()
 {
   displayHandler.displayStartupScreen();
@@ -49,8 +48,6 @@ void setup()
   Serial.begin(115200);
 
   canDataHandler.initCan(kCanBaud);
-
-  delay(1000);
 
   if (Serial)
     printHeader();
@@ -61,6 +58,7 @@ void setup()
   delay(500);
   digitalWrite(LED_BUILTIN, LOW);
 
+  Serial.println("Ballz");
   displayHandler.clearScreen();
 }
 
