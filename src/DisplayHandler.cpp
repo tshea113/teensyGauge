@@ -1,8 +1,9 @@
 #include "DisplayHandler.h"
 
 DisplayHandler::DisplayHandler(int _tft_RST, int _tft_DC, int _tft_CS, int _screenHeight, int _screenWidth)
-    : _tft(_tft_CS, _tft_DC, _tft_RST), // Hardware SPI on Feather or other boards
-      _screenHeight(_screenHeight), _screenWidth(_screenWidth)
+    : _screenHeight(_screenHeight),
+    _screenWidth(_screenWidth),
+    _tft(_tft_CS, _tft_DC, _tft_RST) // Hardware SPI on Feather or other boards
 {
 }
 

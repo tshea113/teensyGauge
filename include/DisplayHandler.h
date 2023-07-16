@@ -26,9 +26,10 @@ public:
   void clearScreen();
 
 private:
-  GC9A01A_t3n _tft;
-  const int _screenWidth;
   const int _screenHeight;
+  const int _screenWidth;
+
+  GC9A01A_t3n _tft;
 
   int getCenterOffset(FontSize fontSize, const String& text) const;
 };
