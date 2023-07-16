@@ -76,7 +76,7 @@ void loop()
   bool newData = canDataHandler.getNewData();
 
   std::pair<String, String> data[] = {
-      {"RPM", rpm}, {"CLT", clt}, {"TPS", tps}, {"MAP", map}};
+      {GaugeLabels[kRPM], rpm}, {GaugeLabels[kCLT], clt}, {GaugeLabels[kTPS], tps}, {GaugeLabels[kMAP], map}};
 
   displayHandler.displayQuad(data);
 
