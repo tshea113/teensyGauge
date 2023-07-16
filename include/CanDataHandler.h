@@ -3,6 +3,8 @@
 #include <FlexCAN_T4.h>
 #include <MegaCAN.h>
 
+extern FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
+
 enum GaugeData : int
 {
   kRPM = 0,
@@ -31,10 +33,11 @@ const String GaugeLabels[] = {"RPM",        "AFR",        "Coolant",    "MAP",  
 class CanDataHandler
 {
 public:
-  CanDataHandler(const int& canBaud, FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16>& can);
+  CanDataHandler() = default;
 
   float getGaugeData(GaugeData data);
 
+  static void initCan(const int& canBaud);
   static void canMShandler(const CAN_message_t& msg);
   static void setNewData(bool newData);
   static bool getNewData();

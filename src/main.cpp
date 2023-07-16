@@ -1,13 +1,10 @@
 #include "CanDataHandler.h"
 
-#include "FlexCAN_T4.h"
-
 #include <Arduino.h>
 
 const int kCanBaud = 500000; // CAN baud rate
 
-FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
-CanDataHandler canDataHandler(kCanBaud, can);
+CanDataHandler canDataHandler;
 
 void printData(bool& newData, const float& map, const float& rpm, const float& tps, const float& clt)
 {
@@ -34,7 +31,9 @@ void setup()
 {
   Serial.begin(115200);
 
-  printHeader();
+  canDataHandler.initCan(kCanBaud);
+
+  if (Serial) printHeader();
 
   // Test the onboard LED in startup
   pinMode(LED_BUILTIN, OUTPUT);
@@ -54,12 +53,11 @@ void loop()
   float clt = canDataHandler.getGaugeData(kCLT);
   bool newData = canDataHandler.getNewData();
 
-  printData(newData, map, rpm, tps, clt);
+  if (Serial) printData(newData, map, rpm, tps, clt);
 
   if (!newData)
   {
     canDataHandler.setNewData(newData);
-    digitalWrite(LED_BUILTIN, LOW);
   }
   // end TODO
 }

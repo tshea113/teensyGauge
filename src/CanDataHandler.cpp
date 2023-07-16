@@ -2,6 +2,8 @@
 
 #include <FlexCAN_T4.h>
 
+FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
+
 constexpr uint32_t kBaseID = 1520; // This is set in megasquirt (typically 1520)
 
 MegaCAN_broadcast_message_t CanDataHandler::_bCastMsg = {};
@@ -9,7 +11,7 @@ MegaCAN_broadcast_message_t CanDataHandler::_bCastMsg = {};
 bool CanDataHandler::_newData = false;
 MegaCAN CanDataHandler::_mega_can(kBaseID);
 
-CanDataHandler::CanDataHandler(const int& canBaud, FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16>& can)
+void CanDataHandler::initCan(const int& canBaud)
 {
   can.begin();
   can.setBaudRate(canBaud);
@@ -47,7 +49,6 @@ void CanDataHandler::canMShandler(const CAN_message_t& msg)
     // broadcast data from MS does not use extended flag, therefore this should be broadcast data from MS
     _mega_can.getBCastData(msg.id, msg.buf, _bCastMsg);
     _newData = true;
-    digitalWrite(LED_BUILTIN, HIGH); // TODO: debug code remove this when screen works
   }
 }
 
