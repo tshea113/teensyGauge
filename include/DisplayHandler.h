@@ -18,6 +18,7 @@ enum FontSize : int
 class DisplayHandler
 {
 public:
+  DisplayHandler() = delete;
   DisplayHandler(int TFT_RST, int TFT_DC, int TFT_CS, int screenHeight, int screenWidth);
 
   void displayStartupScreen();
