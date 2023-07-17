@@ -52,13 +52,6 @@ void setup()
   if (Serial)
     printHeader();
 
-  // Test the onboard LED in startup
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(500);
-  digitalWrite(LED_BUILTIN, LOW);
-
-  Serial.println("Ballz");
   displayHandler.clearScreen();
 }
 
