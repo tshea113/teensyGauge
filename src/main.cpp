@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <utility>
+#include <vector>
 
 // HW specific definitions
 #define TFT_RST 8
@@ -59,25 +60,8 @@ void loop()
 {
   can.events();
 
-  // TODO: This should be set by user not hard coded.
-  float map = canDataHandler.getGaugeData(kMAP);
-  float rpm = canDataHandler.getGaugeData(kRPM);
-  float tps = canDataHandler.getGaugeData(kTPS);
-  float clt = canDataHandler.getGaugeData(kCLT);
-  bool newData = canDataHandler.getNewData();
+  std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
 
-  std::pair<String, String> data[] = {
-      {GaugeLabels[kRPM], rpm}, {GaugeLabels[kCLT], clt}, {GaugeLabels[kTPS], tps}, {GaugeLabels[kMAP], map}};
-
-  displayHandler.displayQuad(data);
-
-  // TODO: Remove this debug code once the display is working
-  if (Serial)
-    printData(newData, map, rpm, tps, clt);
-
-  if (!newData)
-  {
-    canDataHandler.setNewData(newData);
-  }
-  // end TODO
+  displayHandler.setCurrentData(data);
+  displayHandler.display();
 }
