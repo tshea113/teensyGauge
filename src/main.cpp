@@ -19,29 +19,6 @@ const int kCanBaud = 500000;
 CanDataHandler canDataHandler;
 DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
 
-// TODO: this is debug stuff remove later
-void printData(bool& newData, const float& map, const float& rpm, const float& tps, const float& clt)
-{
-  if (newData)
-  {
-    Serial.print(map);
-    Serial.print(" | "); // should be kPa
-    Serial.print(rpm);
-    Serial.print(" | "); // should be rpm
-    Serial.print(tps);
-    Serial.print(" | "); // should be %
-    Serial.println(clt); // should be F
-
-    newData = false;
-  }
-}
-
-// TODO: this is debug stuff remove later
-void printHeader()
-{
-  Serial.println("MAP | RPM | TPS | CLT");
-}
-
 void setup()
 {
   displayHandler.displayStartupScreen();
