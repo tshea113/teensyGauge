@@ -34,7 +34,7 @@ std::vector<std::pair<String, String>> CanDataHandler::getGaugeData(std::vector<
       data.push_back({GaugeLabels[kRPM], _bCastMsg.rpm});
       break;
     case kAFR:
-      data.push_back({GaugeLabels[kAFR], _bCastMsg.AFR1});
+      data.push_back({GaugeLabels[kAFR], _bCastMsg.afr1_old});
       break;
     case kMAP:
       data.push_back({GaugeLabels[kMAP], _bCastMsg.map});
