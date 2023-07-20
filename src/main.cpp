@@ -23,12 +23,7 @@ void setup()
 {
   displayHandler.displayStartupScreen();
 
-  Serial.begin(115200);
-
   canDataHandler.initCan(kCanBaud);
-
-  if (Serial)
-    printHeader();
 
   displayHandler.clearScreen();
 }
