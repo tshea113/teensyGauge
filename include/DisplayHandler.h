@@ -54,6 +54,7 @@ private:
   GaugeView _currentGauge;
   bool _gaugeUpdated;
   std::vector<std::pair<String, String>> _currentData;
+  std::vector<std::pair<String, String>> _oldData;
   bool _dataUpdated;
 
   void _displayQuad();

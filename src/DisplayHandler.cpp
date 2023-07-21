@@ -41,6 +41,7 @@ void DisplayHandler::clearScreen()
 
 void DisplayHandler::setCurrentData(std::vector<std::pair<String, String>> newData)
 {
+  _oldData = _currentData;
   _currentData = newData;
   _dataUpdated = true;
 }
@@ -107,29 +108,58 @@ void DisplayHandler::_displayQuad()
   _tft.println(_currentData[3].second);
 }
 
+// Refreshes changed data on the 4 gauge view.
 void DisplayHandler::_refreshQuad()
 {
-  // Clear the old data
-  _tft.fillRect((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, kMaxDigits), (_screenHeight / 2) - 50, kFontWidthLarge * kMaxDigits, kFontHeightLarge, BLACK);
-  _tft.fillRect(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, kMaxDigits), (_screenHeight / 2) - 50, kFontWidthLarge * kMaxDigits, kFontHeightLarge, BLACK);
-  _tft.fillRect((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, kMaxDigits), (_screenHeight / 2) + 30, kFontWidthLarge * kMaxDigits, kFontHeightLarge, BLACK);
-  _tft.fillRect(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, kMaxDigits), (_screenHeight / 2) + 30, kFontWidthLarge * kMaxDigits, kFontHeightLarge, BLACK);
-
-  // Print data
   _tft.setTextSize(kFontSizeLarge);
-  _tft.setTextColor(WHITE);
 
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()), (_screenHeight / 2) - 50);
-  _tft.println(_currentData[0].second);
+  // TODO: We should really only overwrite individual characters that change. There is still some minor flickering.
+  if (_dataUpdated)
+  {
+    // To avoid flickering:
+    // - Only update the data if it has changed
+    // - Black out only the old data pixels
+    if (_oldData[0] != _currentData[0])
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[0].second.length()), (_screenHeight / 2) - 50);
+      _tft.println(_oldData[0].second);
 
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()), (_screenHeight / 2) - 50);
-  _tft.println(_currentData[1].second);
+      _tft.setTextColor(WHITE);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()), (_screenHeight / 2) - 50);
+      _tft.println(_currentData[0].second);
+    }
+    if (_oldData[1] != _currentData[1])
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[1].second.length()), (_screenHeight / 2) - 50);
+      _tft.println(_oldData[1].second);
 
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()), (_screenHeight / 2) + 30);
-  _tft.println(_currentData[2].second);
+      _tft.setTextColor(WHITE);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()), (_screenHeight / 2) - 50);
+      _tft.println(_currentData[1].second);
+    }
+    if (_oldData[2] != _currentData[2])
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[2].second.length()), (_screenHeight / 2) + 30);
+      _tft.println(_oldData[2].second);
 
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()), (_screenHeight / 2) + 30);
-  _tft.println(_currentData[3].second);
+      _tft.setTextColor(WHITE);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()), (_screenHeight / 2) + 30);
+      _tft.println(_currentData[2].second);
+    }
+    if (_oldData[3] != _currentData[3])
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[3].second.length()), (_screenHeight / 2) + 30);
+      _tft.println(_oldData[3].second);
+
+      _tft.setTextColor(WHITE);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()), (_screenHeight / 2) + 30);
+      _tft.println(_currentData[3].second);
+    }
+  }
 }
 
 int DisplayHandler::_getCenterOffset(const FontSize& fontSize, const int& length) const

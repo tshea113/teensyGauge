@@ -19,13 +19,6 @@ const int kCanBaud = 500000; // Baud rate of the CAN bus
 CanDataHandler canDataHandler;
 DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
 
-Metro displayTimer = Metro(500);
-
-// TODO: delete debug code
-  std::vector<std::pair<String, String>> data = {{"RPM", "1000"}, {"TPS", "45"}, {"MAP", "59"}, {"CLT", "225"}};
-
-uint8_t i = 0;
-
 void setup()
 {
   displayHandler.displayStartupScreen();
@@ -40,18 +33,11 @@ void loop()
 {
   can.events();
 
-  // std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
-
-  // TODO: This is debug code
-  if (displayTimer.check())
+  if (canDataHandler.getNewData)
   {
-    data[0].second = String(i++);
-    data[1].second = String(i++);
-    data[2].second = String(i++);
-    data[3].second = String(i++);
+    std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
+
     displayHandler.setCurrentData(data);
     displayHandler.display();
-
-    displayTimer.reset();
   }
 }
