@@ -2,6 +2,7 @@
 #include "DisplayHandler.h"
 
 #include <Arduino.h>
+#include <Metro.h>
 #include <utility>
 #include <vector>
 
@@ -13,11 +14,17 @@
 #define SCREEN_WIDTH 240
 #define SCREEEN_HEIGHT 240
 
-// CAN baud rate
-const int kCanBaud = 500000;
+const int kCanBaud = 500000; // Baud rate of the CAN bus
 
 CanDataHandler canDataHandler;
 DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
+
+Metro displayTimer = Metro(500);
+
+// TODO: delete debug code
+  std::vector<std::pair<String, String>> data = {{"RPM", "1000"}, {"TPS", "45"}, {"MAP", "59"}, {"CLT", "225"}};
+
+uint8_t i = 0;
 
 void setup()
 {
@@ -25,6 +32,7 @@ void setup()
 
   canDataHandler.initCan(kCanBaud);
 
+  delay(500);
   displayHandler.clearScreen();
 }
 
@@ -32,8 +40,18 @@ void loop()
 {
   can.events();
 
-  std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
+  // std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
 
-  displayHandler.setCurrentData(data);
-  displayHandler.display();
+  // TODO: This is debug code
+  if (displayTimer.check())
+  {
+    data[0].second = String(i++);
+    data[1].second = String(i++);
+    data[2].second = String(i++);
+    data[3].second = String(i++);
+    displayHandler.setCurrentData(data);
+    displayHandler.display();
+
+    displayTimer.reset();
+  }
 }

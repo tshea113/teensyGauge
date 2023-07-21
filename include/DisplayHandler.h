@@ -5,9 +5,17 @@
 #include <Adafruit_GFX.h>
 #include <GC9A01A_t3n.h>
 #include <SPI.h>
-
 #include <utility>
 #include <vector>
+
+const int kFontWidthSmall = 6;
+const int kFontHeightSmall = 8;
+const int kFontWidthMedium = 12;
+const int kFontHeightMedium = 16;
+const int kFontWidthLarge = 18;
+const int kFontHeightLarge = 24;
+
+const int kMaxDigits = 5;
 
 enum FontSize : int
 {
@@ -27,13 +35,15 @@ public:
   DisplayHandler() = delete;
   DisplayHandler(int TFT_RST, int TFT_DC, int TFT_CS, int screenHeight, int screenWidth);
 
-  void display();
   void displayStartupScreen();
-  void displayData(int rpm, int tps, int mat, int map, int clt);
+  void display();
   void clearScreen();
 
   void setCurrentData(std::vector<std::pair<String, String>> newData);
   std::vector<std::pair<String, String>> getCurrentData();
+
+  void setCurrentGauge(GaugeView newGauge);
+  GaugeView getCurrentGauge();
 
 private:
   const int _screenHeight;
@@ -42,9 +52,12 @@ private:
   GC9A01A_t3n _tft;
 
   GaugeView _currentGauge;
+  bool _gaugeUpdated;
   std::vector<std::pair<String, String>> _currentData;
+  bool _dataUpdated;
 
   void _displayQuad();
+  void _refreshQuad();
 
-  int _getCenterOffset(FontSize fontSize, const String& text) const;
+  int _getCenterOffset(const FontSize& fontSize,const int& length) const;
 };
