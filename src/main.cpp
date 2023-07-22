@@ -2,7 +2,6 @@
 #include "DisplayHandler.h"
 
 #include <Arduino.h>
-#include <Metro.h>
 #include <utility>
 #include <vector>
 
@@ -33,7 +32,7 @@ void loop()
 {
   can.events();
 
-  if (canDataHandler.getNewData)
+  if (canDataHandler.getNewData())
   {
     // TODO: This should be user selected when encoder is implemented.
     std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
