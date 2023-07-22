@@ -22,23 +22,38 @@ void CanDataHandler::initCan(const int& canBaud)
   can.mailboxStatus();
 }
 
-float CanDataHandler::getGaugeData(GaugeData data)
+std::vector<std::pair<String, String>> CanDataHandler::getGaugeData(std::vector<GaugeData> gauges)
 {
-  switch (data)
+  std::vector<std::pair<String, String>> data;
+
+  for (auto gauge : gauges)
   {
-  case kRPM:
-    return _bCastMsg.rpm;
-  case kMAP:
-    return _bCastMsg.map;
-  case kMAT:
-    return _bCastMsg.mat;
-  case kTPS:
-    return _bCastMsg.tps;
-  case kCLT:
-    return _bCastMsg.clt;
-  default:
-    return 0;
-  };
+    switch (gauge)
+    {
+    case kRPM:
+      data.push_back({GaugeLabels[kRPM], _bCastMsg.rpm});
+      break;
+    case kAFR:
+      data.push_back({GaugeLabels[kAFR], _bCastMsg.afr1_old});
+      break;
+    case kMAP:
+      data.push_back({GaugeLabels[kMAP], _bCastMsg.map});
+      break;
+    case kMAT:
+      data.push_back({GaugeLabels[kMAT], _bCastMsg.mat});
+      break;
+    case kTPS:
+      data.push_back({GaugeLabels[kTPS], _bCastMsg.tps});
+      break;
+    case kCLT:
+      data.push_back({GaugeLabels[kCLT], _bCastMsg.clt});
+      break;
+    default:
+      break;
+    };
+  }
+
+  return data;
 }
 
 // Routine used by FlexCAN for retrieving the received CAN data.
