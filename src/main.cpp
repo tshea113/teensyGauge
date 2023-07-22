@@ -35,6 +35,7 @@ void loop()
 
   if (canDataHandler.getNewData)
   {
+    // TODO: This should be user selected when encoder is implemented.
     std::vector<std::pair<String, String>> data = canDataHandler.getGaugeData({kRPM, kTPS, kMAP, kCLT});
 
     displayHandler.setCurrentData(data);
