@@ -22,6 +22,11 @@ void CanDataHandler::initCan(const int& canBaud)
   can.mailboxStatus();
 }
 
+void CanDataHandler::pollCan()
+{
+  can.events();
+}
+
 std::vector<std::pair<String, String>> CanDataHandler::getGaugeData(std::vector<GaugeData> gauges)
 {
   std::vector<std::pair<String, String>> data;

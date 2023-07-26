@@ -38,6 +38,8 @@ class CanDataHandler
 public:
   CanDataHandler() = default;
 
+  void pollCan();
+
   std::vector<std::pair<String, String>> getGaugeData(std::vector<GaugeData> data);
 
   static void initCan(const int& canBaud);
