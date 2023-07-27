@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CanDataHandler.h"
 #include "ProgramMemory.h"
 
 #include <Adafruit_GFX.h>
@@ -10,8 +11,10 @@
 
 const int kFontWidthSmall = 6;
 const int kFontHeightSmall = 8;
+
 const int kFontWidthMedium = 12;
 const int kFontHeightMedium = 16;
+
 const int kFontWidthLarge = 18;
 const int kFontHeightLarge = 24;
 
@@ -26,7 +29,12 @@ enum FontSize : int
 
 enum GaugeView : int
 {
-  kQuadGauge = 1
+  kDashboard = 0,
+  kQuadGauge = 1,
+  kDualGauge = 2,
+  kSingleGauge = 3,
+  kGaugeMin = kDashboard,
+  kGaugeMax = kSingleGauge,
 };
 
 class DisplayHandler
@@ -39,11 +47,14 @@ public:
   void display();
   void clearScreen();
 
-  void setCurrentData(std::vector<std::pair<String, String>> newData);
-  std::vector<std::pair<String, String>> getCurrentData();
+  void moveGaugeCursor(int gaugeIndex);
+  void clearGaugeCursor();
 
-  void setCurrentGauge(GaugeView newGauge);
-  GaugeView getCurrentGauge();
+  void setCurrentData(std::vector<std::pair<GaugeData, String>> newData);
+  std::vector<std::pair<GaugeData, String>> getCurrentData();
+
+  void setCurrentView(GaugeView newGauge);
+  GaugeView getCurrentView();
 
 private:
   const int _screenHeight;
@@ -51,14 +62,26 @@ private:
 
   GC9A01A_t3n _tft;
 
-  GaugeView _currentGauge;
-  bool _gaugeUpdated;
-  std::vector<std::pair<String, String>> _currentData;
-  std::vector<std::pair<String, String>> _oldData;
+  GaugeView _currentGaugeView;
+  bool _gaugeViewUpdated;
+  std::vector<std::pair<GaugeData, String>> _currentData;
+  std::vector<std::pair<GaugeData, String>> _oldData;
   bool _dataUpdated;
+  int _gaugeCursorIndex;
+
+  void _displayDashboard();
+  void _refreshDashboard();
 
   void _displayQuad();
   void _refreshQuad();
 
-  int _getCenterOffset(const FontSize& fontSize,const int& length) const;
+  void _displayDual();
+  void _refreshDual();
+
+  void _displaySingle();
+  void _refreshSingle();
+
+  void _highlightQuadGauge(const uint16_t textColor, const uint16_t backgroundColor);
+
+  int _getCenterOffset(const FontSize& fontSize, const int& length) const;
 };
