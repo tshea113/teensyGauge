@@ -27,31 +27,31 @@ void CanDataHandler::pollCan()
   can.events();
 }
 
-std::vector<std::pair<String, String>> CanDataHandler::getGaugeData(std::vector<GaugeData> gauges)
+std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(std::vector<GaugeData> gauges)
 {
-  std::vector<std::pair<String, String>> data;
+  std::vector<std::pair<GaugeData, String>> data;
 
   for (auto gauge : gauges)
   {
     switch (gauge)
     {
     case kRPM:
-      data.push_back({GaugeLabels[kRPM], _bCastMsg.rpm});
+      data.push_back({kRPM, _bCastMsg.rpm});
       break;
     case kAFR:
-      data.push_back({GaugeLabels[kAFR], _bCastMsg.afr1_old});
+      data.push_back({kAFR, _bCastMsg.afr1_old});
       break;
     case kMAP:
-      data.push_back({GaugeLabels[kMAP], _bCastMsg.map});
+      data.push_back({kMAP, _bCastMsg.map});
       break;
     case kMAT:
-      data.push_back({GaugeLabels[kMAT], _bCastMsg.mat});
+      data.push_back({kMAT, _bCastMsg.mat});
       break;
     case kTPS:
-      data.push_back({GaugeLabels[kTPS], _bCastMsg.tps});
+      data.push_back({kTPS, _bCastMsg.tps});
       break;
     case kCLT:
-      data.push_back({GaugeLabels[kCLT], _bCastMsg.clt});
+      data.push_back({kCLT, _bCastMsg.clt});
       break;
     default:
       break;
