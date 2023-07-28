@@ -3,8 +3,8 @@
 #include "CanDataHandler.h"
 #include "ProgramMemory.h"
 
+#include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>
-#include <GC9A01A_t3n.h>
 #include <SPI.h>
 #include <utility>
 #include <vector>
@@ -60,7 +60,7 @@ private:
   const int _screenHeight;
   const int _screenWidth;
 
-  GC9A01A_t3n _tft;
+  Adafruit_GC9A01A _tft;
 
   GaugeView _currentGaugeView;
   bool _gaugeViewUpdated;
