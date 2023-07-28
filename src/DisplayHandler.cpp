@@ -57,9 +57,9 @@ void DisplayHandler::moveGaugeCursor(int gaugeIndex)
   switch (_currentGaugeView)
   {
   case kQuadGauge:
-    _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
+    _highlightQuadGauge(WHITE, BLACK);
     _gaugeCursorIndex = gaugeIndex;
-    _highlightQuadGauge(GC9A01A_BLACK, GC9A01A_WHITE);
+    _highlightQuadGauge(BLACK, WHITE);
     break;
   default:
     Serial.println("Cursor not supported on this view!");
@@ -71,7 +71,7 @@ void DisplayHandler::clearGaugeCursor()
   switch (_currentGaugeView)
   {
   case kQuadGauge:
-    _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
+    _highlightQuadGauge(WHITE, BLACK);
     _gaugeCursorIndex = -1;
     break;
   default:
@@ -108,7 +108,7 @@ void DisplayHandler::_displayDashboard()
   clearScreen();
 
   _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(GC9A01A_WHITE);
+  _tft.setTextColor(WHITE);
 
   _tft.setCursor(5, _screenHeight / 2);
 
@@ -240,10 +240,10 @@ void DisplayHandler::_displayDual()
 {
   clearScreen();
 
-  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, GC9A01A_WHITE);
+  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
 
   _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(GC9A01A_WHITE);
+  _tft.setTextColor(WHITE);
 
   // Print labels
   _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
@@ -260,7 +260,7 @@ void DisplayHandler::_displaySingle()
   clearScreen();
 
   _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(GC9A01A_WHITE);
+  _tft.setTextColor(WHITE);
 
   _tft.setCursor(5, _screenHeight / 2);
 
