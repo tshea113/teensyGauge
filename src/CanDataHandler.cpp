@@ -11,7 +11,7 @@ MegaCAN_broadcast_message_t CanDataHandler::_bCastMsg = {};
 bool CanDataHandler::_newData = false;
 MegaCAN CanDataHandler::_mega_can(kBaseID);
 
-void CanDataHandler::initCan(const int& canBaud)
+void CanDataHandler::initCan(int canBaud)
 {
   can.begin();
   can.setBaudRate(canBaud);
@@ -27,7 +27,7 @@ void CanDataHandler::pollCan()
   can.events();
 }
 
-std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(std::vector<GaugeData> gauges)
+std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std::vector<GaugeData>& gauges)
 {
   std::vector<std::pair<GaugeData, String>> data;
 

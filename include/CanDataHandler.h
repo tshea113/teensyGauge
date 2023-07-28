@@ -42,7 +42,7 @@ public:
 
   std::vector<std::pair<GaugeData, String>> getGaugeData(std::vector<GaugeData> data);
 
-  static void initCan(const int& canBaud);
+  static void initCan(int canBaud);
   static void canMShandler(const CAN_message_t& msg);
   static void setNewData(bool newData);
   static bool getNewData();

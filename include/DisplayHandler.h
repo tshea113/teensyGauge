@@ -81,7 +81,7 @@ private:
   void _displaySingle();
   void _refreshSingle();
 
-  void _highlightQuadGauge(const uint16_t textColor, const uint16_t backgroundColor);
+  void _highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor);
 
-  int _getCenterOffset(const FontSize& fontSize, const int& length) const;
+  int _getCenterOffset(FontSize fontSize, int length) const;
 };

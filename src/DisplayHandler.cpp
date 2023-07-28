@@ -261,7 +261,7 @@ void DisplayHandler::_displaySingle()
 }
 
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
-void DisplayHandler::_highlightQuadGauge(const uint16_t textColor, const uint16_t backgroundColor)
+void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor)
 {
   _tft.setTextColor(textColor);
   _tft.setTextSize(kFontSizeMedium);
@@ -308,7 +308,7 @@ void DisplayHandler::_highlightQuadGauge(const uint16_t textColor, const uint16_
   }
 }
 
-int DisplayHandler::_getCenterOffset(const FontSize& fontSize, const int& length) const
+int DisplayHandler::_getCenterOffset(FontSize fontSize, int length) const
 {
   switch (fontSize)
   {
