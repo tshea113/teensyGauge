@@ -240,12 +240,19 @@ void DisplayHandler::_displayDual()
 {
   clearScreen();
 
+  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
+
   _tft.setTextSize(kFontSizeMedium);
   _tft.setTextColor(WHITE);
 
-  _tft.setCursor(5, _screenHeight / 2);
+  // Print labels
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
+                 (_screenHeight / 2) - 20);
+  _tft.println(GaugeLabels[_currentData[0].first]);
 
-  _tft.println("Dual gauges goes here!");
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[2].first].length()),
+                 (_screenHeight / 2) + 6);
+  _tft.println(GaugeLabels[_currentData[1].first]);
 }
 
 void DisplayHandler::_displaySingle()
