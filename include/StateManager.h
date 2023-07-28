@@ -4,13 +4,6 @@
 #include <DisplayHandler.h>
 #include <EncoderHandler.h>
 
-// TODO: Delete when implemented
-// State manager should handle what data is currently being served to the user
-// It will keep flags of what current menu is selected, what options are available, etc.
-// Main will poll for inputs and push those to the state manager
-// State manager will take these inputs and serve them to the display
-// It will funnel the right CAN data to the display
-
 // This is used to track the current state of the UI.
 // - Idle consists of a scrollable list of views (dashboard, quad, dual, etc.).
 // - Selecting a given view will allow you to scroll through the items on that view.
