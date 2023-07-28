@@ -284,12 +284,28 @@ void DisplayHandler::_displaySingle()
 {
   clearScreen();
 
-  _tft.setTextSize(kFontSizeMedium);
+  if (_currentData.size() < 1)
+  {
+    Serial.println("Current data has less than 1 gauge!");
+  }
+
+  _currentData[0].second = "10000";
+
+  // Print label
+  _tft.setTextSize(kFontSizeLarge);
   _tft.setTextColor(WHITE);
 
-  _tft.setCursor(5, _screenHeight / 2);
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeLarge, GaugeLabels[_currentData[0].first].length()),
+                 (_screenHeight / 2) + 55);
+  _tft.println(GaugeLabels[_currentData[0].first]);
 
-  _tft.println("Single gauges goes here!");
+  // Print data
+  _tft.setTextSize(kFontSizeXXXL);
+  _tft.setTextColor(WHITE);
+
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXXXL, _currentData[0].second.length()),
+                 (_screenHeight / 2) - 70);
+  _tft.println(_currentData[0].second);
 }
 
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
@@ -380,6 +396,10 @@ int DisplayHandler::_getCenterOffset(FontSize fontSize, int length) const
     return (length * kFontWidthLarge) / 2;
   case kFontSizeXL:
     return (length * kFontWidthXL) / 2;
+  case kFontSizeXXL:
+    return (length * kFontWidthXXL) / 2;
+  case kFontSizeXXXL:
+    return (length * kFontWidthXXXL) / 2;
   default:
     return -1;
   }

@@ -21,6 +21,12 @@ const int kFontHeightLarge = 24;
 const int kFontWidthXL = 24;
 const int kFontHeightXL = 36;
 
+const int kFontWidthXXL = 30;
+const int kFontHeightXXL = 44;
+
+const int kFontWidthXXXL = 36;
+const int kFontHeightXXXL = 52;
+
 const int kMaxDigits = 5;
 
 enum FontSize : int
@@ -29,6 +35,8 @@ enum FontSize : int
   kFontSizeMedium = 2, // Font size 12x16
   kFontSizeLarge = 3,  // Font size 18x24
   kFontSizeXL = 4,     // Font size 24x36
+  kFontSizeXXL = 5,    // Font size 30x44
+  kFontSizeXXXL = 6,   // Font size 36x52
 };
 
 enum GaugeView : int
@@ -87,6 +95,7 @@ private:
 
   void _highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor);
   void _highlightDualGauge(uint16_t textColor, uint16_t backgroundColor);
+  void _highlightSingleGauge(uint16_t textColor, uint16_t backgroundColor);
 
   int _getCenterOffset(FontSize fontSize, int length) const;
 };
