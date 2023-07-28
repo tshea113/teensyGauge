@@ -289,8 +289,6 @@ void DisplayHandler::_displaySingle()
     Serial.println("Current data has less than 1 gauge!");
   }
 
-  _currentData[0].second = "10000";
-
   // Print label
   _tft.setTextSize(kFontSizeLarge);
   _tft.setTextColor(WHITE);
