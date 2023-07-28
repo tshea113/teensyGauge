@@ -40,7 +40,7 @@ public:
 
   void pollCan();
 
-  std::vector<std::pair<GaugeData, String>> getGaugeData(std::vector<GaugeData> data);
+  std::vector<std::pair<GaugeData, String>> getGaugeData(const std::vector<GaugeData>& data);
 
   static void initCan(int canBaud);
   static void canMShandler(const CAN_message_t& msg);
