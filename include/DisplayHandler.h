@@ -2,8 +2,8 @@
 
 #include "ProgramMemory.h"
 
-#include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>
+#include <GC9A01A_t3n.h>
 #include <SPI.h>
 #include <utility>
 #include <vector>
@@ -49,7 +49,7 @@ private:
   const int _screenHeight;
   const int _screenWidth;
 
-  Adafruit_GC9A01A _tft;
+  GC9A01A_t3n _tft;
 
   GaugeView _currentGauge;
   bool _gaugeUpdated;
@@ -60,5 +60,5 @@ private:
   void _displayQuad();
   void _refreshQuad();
 
-  int _getCenterOffset(const FontSize& fontSize, const int& length) const;
+  int _getCenterOffset(const FontSize& fontSize,const int& length) const;
 };
