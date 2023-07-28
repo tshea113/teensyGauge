@@ -1,9 +1,7 @@
 #include "DisplayHandler.h"
 
 DisplayHandler::DisplayHandler(int _tft_RST, int _tft_DC, int _tft_CS, int _screenHeight, int _screenWidth)
-    : _screenHeight(_screenHeight),
-    _screenWidth(_screenWidth),
-    _tft(_tft_CS, _tft_DC, _tft_RST) // Hardware SPI
+    : _screenHeight(_screenHeight), _screenWidth(_screenWidth), _tft(_tft_CS, _tft_DC, _tft_RST) // Hardware SPI
 {
   _currentGauge = kQuadGauge;
 
@@ -15,7 +13,7 @@ void DisplayHandler::displayStartupScreen()
 {
   _tft.begin();
   clearScreen();
-  _tft.drawBitmap(20, 98, miata_logo, 200, 44, RED);
+  _tft.drawBitmap(20, 98, miata_logo, 200, 44, GC9A01A_RED);
 }
 
 void DisplayHandler::display()
@@ -36,7 +34,7 @@ void DisplayHandler::display()
 
 void DisplayHandler::clearScreen()
 {
-  _tft.fillScreen(BLACK);
+  _tft.fillScreen(GC9A01A_BLACK);
 }
 
 void DisplayHandler::setCurrentData(std::vector<std::pair<String, String>> newData)
@@ -68,21 +66,23 @@ void DisplayHandler::_displayQuad()
 {
   clearScreen();
 
-  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
-  _tft.drawFastVLine(_screenWidth / 2, 0, _screenHeight, WHITE);
+  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, GC9A01A_WHITE);
+  _tft.drawFastVLine(_screenWidth / 2, 0, _screenHeight, GC9A01A_WHITE);
 
   _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(WHITE);
+  _tft.setTextColor(GC9A01A_WHITE);
 
   // Print labels
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[0].first.length()), (_screenHeight / 2) - 20);
+  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[0].first.length()),
+                 (_screenHeight / 2) - 20);
   _tft.println(_currentData[0].first);
 
   _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[1].first.length()),
                  (_screenHeight / 2) - 20);
   _tft.println(_currentData[1].first);
 
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[2].first.length()), (_screenHeight / 2) + 6);
+  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[2].first.length()),
+                 (_screenHeight / 2) + 6);
   _tft.println(_currentData[2].first);
 
   _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, _currentData[3].first.length()),
@@ -91,16 +91,18 @@ void DisplayHandler::_displayQuad()
 
   // Print data
   _tft.setTextSize(kFontSizeLarge);
-  _tft.setTextColor(WHITE);
+  _tft.setTextColor(GC9A01A_WHITE);
 
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()), (_screenHeight / 2) - 50);
+  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()),
+                 (_screenHeight / 2) - 50);
   _tft.println(_currentData[0].second);
 
   _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()),
                  (_screenHeight / 2) - 50);
   _tft.println(_currentData[1].second);
 
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()), (_screenHeight / 2) + 30);
+  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()),
+                 (_screenHeight / 2) + 30);
   _tft.println(_currentData[2].second);
 
   _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()),
@@ -118,45 +120,55 @@ void DisplayHandler::_refreshQuad()
   {
     // To avoid flickering:
     // - Only update the data if it has changed
-    // - Black out only the old data pixels
+    // - GC9A01A_BLACK out only the old data pixels
     if (_oldData[0] != _currentData[0])
     {
-      _tft.setTextColor(BLACK);
-      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[0].second.length()), (_screenHeight / 2) - 50);
+      _tft.setTextColor(GC9A01A_BLACK);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[0].second.length()),
+                     (_screenHeight / 2) - 50);
       _tft.println(_oldData[0].second);
 
-      _tft.setTextColor(WHITE);
-      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()), (_screenHeight / 2) - 50);
+      _tft.setTextColor(GC9A01A_WHITE);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()),
+                     (_screenHeight / 2) - 50);
       _tft.println(_currentData[0].second);
     }
     if (_oldData[1] != _currentData[1])
     {
-      _tft.setTextColor(BLACK);
-      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[1].second.length()), (_screenHeight / 2) - 50);
+      _tft.setTextColor(GC9A01A_BLACK);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[1].second.length()),
+                     (_screenHeight / 2) - 50);
       _tft.println(_oldData[1].second);
 
-      _tft.setTextColor(WHITE);
-      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()), (_screenHeight / 2) - 50);
+      _tft.setTextColor(GC9A01A_WHITE);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) -
+                         _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()),
+                     (_screenHeight / 2) - 50);
       _tft.println(_currentData[1].second);
     }
     if (_oldData[2] != _currentData[2])
     {
-      _tft.setTextColor(BLACK);
-      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[2].second.length()), (_screenHeight / 2) + 30);
+      _tft.setTextColor(GC9A01A_BLACK);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[2].second.length()),
+                     (_screenHeight / 2) + 30);
       _tft.println(_oldData[2].second);
 
-      _tft.setTextColor(WHITE);
-      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()), (_screenHeight / 2) + 30);
+      _tft.setTextColor(GC9A01A_WHITE);
+      _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()),
+                     (_screenHeight / 2) + 30);
       _tft.println(_currentData[2].second);
     }
     if (_oldData[3] != _currentData[3])
     {
-      _tft.setTextColor(BLACK);
-      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[3].second.length()), (_screenHeight / 2) + 30);
+      _tft.setTextColor(GC9A01A_BLACK);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[3].second.length()),
+                     (_screenHeight / 2) + 30);
       _tft.println(_oldData[3].second);
 
-      _tft.setTextColor(WHITE);
-      _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()), (_screenHeight / 2) + 30);
+      _tft.setTextColor(GC9A01A_WHITE);
+      _tft.setCursor(_screenWidth - (_screenWidth / 4) -
+                         _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()),
+                     (_screenHeight / 2) + 30);
       _tft.println(_currentData[3].second);
     }
   }
