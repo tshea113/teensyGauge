@@ -23,7 +23,7 @@
 #define SCREEEN_HEIGHT 240
 
 const int kCanBaud = 500000;       // Baud rate of the CAN bus
-const int kDoubleClickSpeed = 500; // Max time between clicks for double click
+const int kDoubleClickSpeed = 300; // Max time between clicks for double click in ms
 
 CanDataHandler canDataHandler;
 DisplayHandler displayHandler(TFT_RST, TFT_DC, TFT_CS, SCREEEN_HEIGHT, SCREEN_WIDTH);
