@@ -61,6 +61,11 @@ void DisplayHandler::moveGaugeCursor(int gaugeIndex)
     _gaugeCursorIndex = gaugeIndex;
     _highlightQuadGauge(BLACK, WHITE);
     break;
+  case kDualGauge:
+    _highlightDualGauge(WHITE, BLACK);
+    _gaugeCursorIndex = gaugeIndex;
+    _highlightDualGauge(BLACK, WHITE);
+    break;
   default:
     Serial.println("Cursor not supported on this view!");
   }
@@ -72,11 +77,14 @@ void DisplayHandler::clearGaugeCursor()
   {
   case kQuadGauge:
     _highlightQuadGauge(WHITE, BLACK);
-    _gaugeCursorIndex = -1;
+    break;
+  case kDualGauge:
+    _highlightDualGauge(WHITE, BLACK);
     break;
   default:
     Serial.println("Cursor not supported on this view!");
   }
+  _gaugeCursorIndex = -1;
 }
 
 // Updates the gauge data and caches the old data for display refreshing
@@ -245,14 +253,31 @@ void DisplayHandler::_displayDual()
   _tft.setTextSize(kFontSizeMedium);
   _tft.setTextColor(WHITE);
 
+  if (_currentData.size() < 2)
+  {
+    Serial.println("Current data has less than 2 gauges!");
+  }
+
   // Print labels
   _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
-                 (_screenHeight / 2) - 20);
+                 (_screenHeight / 2) - kFontHeightMedium - 4);
   _tft.println(GaugeLabels[_currentData[0].first]);
 
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[2].first].length()),
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
                  (_screenHeight / 2) + 6);
   _tft.println(GaugeLabels[_currentData[1].first]);
+
+  // Print data
+  _tft.setTextSize(kFontSizeXL);
+  _tft.setTextColor(WHITE);
+
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[0].second.length()),
+                 (_screenHeight / 2) - 75);
+  _tft.println(_currentData[0].second);
+
+  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[1].second.length()),
+                 (_screenHeight / 2) + 55);
+  _tft.println(_currentData[1].second);
 }
 
 void DisplayHandler::_displaySingle()
@@ -315,16 +340,46 @@ void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t background
   }
 }
 
+// Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
+void DisplayHandler::_highlightDualGauge(uint16_t textColor, uint16_t backgroundColor)
+{
+  _tft.setTextColor(textColor);
+  _tft.setTextSize(kFontSizeMedium);
+  switch (_gaugeCursorIndex)
+  {
+  case 0:
+    _tft.fillRect((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()) -
+                      1,
+                  (_screenHeight / 2) - 20 - 1, kFontWidthMedium * GaugeLabels[_currentData[0].first].length(),
+                  kFontHeightMedium, backgroundColor);
+    _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
+                   (_screenHeight / 2) - 20);
+    _tft.println(GaugeLabels[_currentData[0].first]);
+    break;
+  case 1:
+    _tft.fillRect((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()) -
+                      1,
+                  (_screenHeight / 2) + 6 - 1, kFontWidthMedium * GaugeLabels[_currentData[1].first].length(),
+                  kFontHeightMedium, backgroundColor);
+    _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
+                   (_screenHeight / 2) + 6);
+    _tft.println(GaugeLabels[_currentData[1].first]);
+    break;
+  }
+}
+
 int DisplayHandler::_getCenterOffset(FontSize fontSize, int length) const
 {
   switch (fontSize)
   {
   case kFontSizeSmall:
-    return (length * 6) / 2;
+    return (length * kFontWidthSmall) / 2;
   case kFontSizeMedium:
-    return (length * 12) / 2;
+    return (length * kFontWidthMedium) / 2;
   case kFontSizeLarge:
-    return (length * 18) / 2;
+    return (length * kFontWidthLarge) / 2;
+  case kFontSizeXL:
+    return (length * kFontWidthXL) / 2;
   default:
     return -1;
   }

@@ -133,6 +133,10 @@ void StateManager::_updateEncoder()
       _encoderHandler.setEncoderInterval(0, 3, true);
       _encoderHandler.setEncoderValue(0);
       break;
+    case kDualGauge:
+      _encoderHandler.setEncoderInterval(0, 1, true);
+      _encoderHandler.setEncoderValue(0);
+      break;
     default:
       Serial.println("Encoder not valid for this view!");
     }
