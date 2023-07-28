@@ -40,7 +40,7 @@ private:
   State _menuState;
 
   void _scrollGauge(int newValue);
-  void _select();
+  void _select(int numClicks);
   void _updateEncoder();
   std::vector<std::pair<GaugeData, String>> _loadStateData(GaugeView state);
 };
