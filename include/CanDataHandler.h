@@ -44,12 +44,8 @@ public:
 
   static void initCan(int canBaud);
   static void canMShandler(const CAN_message_t& msg);
-  static void setNewData(bool newData);
-  static bool getNewData();
 
 private:
-  static bool _newData;
-
   static MegaCAN _mega_can;
   static MegaCAN_broadcast_message_t _bCastMsg;
 };
