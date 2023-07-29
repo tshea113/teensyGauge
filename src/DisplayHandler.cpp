@@ -120,7 +120,7 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
 
   // To avoid flickering:
   // - Only update the data if it has changed
-  // - GC9A01A_BLACK out only the old data pixels
+  // - Black out only the old data pixels
 
   // We need to redraw everything if the data length changes.
   if (_oldData[dataIndex].second.length() != _currentData[dataIndex].second.length())
