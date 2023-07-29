@@ -57,6 +57,8 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
       break;
     };
   }
+  // Data is no longer new, so we need to reset the flag.
+  _newData = false;
 
   return data;
 }
