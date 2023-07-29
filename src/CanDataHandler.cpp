@@ -1,14 +1,10 @@
 #include "CanDataHandler.h"
 
-#include <Chrono.h>
 #include <FlexCAN_T4.h>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 
 constexpr uint32_t kBaseID = 1520; // This is set in megasquirt (typically 1520)
-
-uint8_t counter = 0;
-Chrono counterTimer;
 
 MegaCAN_broadcast_message_t CanDataHandler::_bCastMsg = {};
 MegaCAN CanDataHandler::_mega_can(kBaseID);
@@ -27,12 +23,6 @@ void CanDataHandler::initCan(int canBaud)
 void CanDataHandler::pollCan()
 {
   can.events();
-
-  if (counterTimer.hasPassed(10))
-  {
-    counter++;
-    counterTimer.restart();
-  }
 }
 
 std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std::vector<GaugeData>& gauges)
@@ -44,26 +34,22 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
     switch (gauge)
     {
     case kRPM:
-      // data.push_back({kRPM, _bCastMsg.rpm});
-      data.push_back({kRPM, counter});
+      data.push_back({kRPM, _bCastMsg.rpm});
       break;
     case kAFR:
       data.push_back({kAFR, _bCastMsg.afr1_old});
       break;
     case kMAP:
-      // data.push_back({kMAP, _bCastMsg.map});
-      data.push_back({kMAP, counter / 2});
+      data.push_back({kMAP, _bCastMsg.map});
       break;
     case kMAT:
       data.push_back({kMAT, _bCastMsg.mat});
       break;
     case kTPS:
-      // data.push_back({kTPS, _bCastMsg.tps});
-      data.push_back({kTPS, counter + 1});
+      data.push_back({kTPS, _bCastMsg.tps});
       break;
     case kCLT:
-      // data.push_back({kCLT, _bCastMsg.clt});
-      data.push_back({kCLT, counter + 10});
+      data.push_back({kCLT, _bCastMsg.clt});
       break;
     default:
       break;
