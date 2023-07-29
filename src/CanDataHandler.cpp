@@ -1,6 +1,5 @@
 #include "CanDataHandler.h"
 
-#include <Chrono.h>
 #include <FlexCAN_T4.h>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
