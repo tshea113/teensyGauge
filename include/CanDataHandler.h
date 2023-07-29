@@ -29,18 +29,20 @@ enum GaugeData : int
   kTiming = 16
 };
 
-const String GaugeLabels[] = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
-                              "Voltage",    "TPS",        "Knock",      "Barometer",  "EGO Corr", "IAC",
-                              "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing"};
+const std::vector<String> GaugeLabels = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
+                                         "Voltage",    "TPS",        "Knock",      "Barometer",  "EGO Corr", "IAC",
+                                         "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing"};
 
 class CanDataHandler
 {
 public:
   CanDataHandler() = default;
 
-  std::vector<std::pair<String, String>> getGaugeData(std::vector<GaugeData> data);
+  void pollCan();
 
-  static void initCan(const int& canBaud);
+  std::vector<std::pair<GaugeData, String>> getGaugeData(const std::vector<GaugeData>& data);
+
+  static void initCan(int canBaud);
   static void canMShandler(const CAN_message_t& msg);
   static void setNewData(bool newData);
   static bool getNewData();

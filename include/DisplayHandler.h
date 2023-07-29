@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CanDataHandler.h"
 #include "ProgramMemory.h"
 
 #include <Adafruit_GFX.h>
@@ -10,10 +11,21 @@
 
 const int kFontWidthSmall = 6;
 const int kFontHeightSmall = 8;
+
 const int kFontWidthMedium = 12;
 const int kFontHeightMedium = 16;
+
 const int kFontWidthLarge = 18;
 const int kFontHeightLarge = 24;
+
+const int kFontWidthXL = 24;
+const int kFontHeightXL = 36;
+
+const int kFontWidthXXL = 30;
+const int kFontHeightXXL = 44;
+
+const int kFontWidthXXXL = 36;
+const int kFontHeightXXXL = 52;
 
 const int kMaxDigits = 5;
 
@@ -22,11 +34,19 @@ enum FontSize : int
   kFontSizeSmall = 1,  // Font size 6x8
   kFontSizeMedium = 2, // Font size 12x16
   kFontSizeLarge = 3,  // Font size 18x24
+  kFontSizeXL = 4,     // Font size 24x36
+  kFontSizeXXL = 5,    // Font size 30x44
+  kFontSizeXXXL = 6,   // Font size 36x52
 };
 
 enum GaugeView : int
 {
-  kQuadGauge = 1
+  kDashboard = 0,
+  kQuadGauge = 1,
+  kDualGauge = 2,
+  kSingleGauge = 3,
+  kGaugeMin = kQuadGauge,
+  kGaugeMax = kSingleGauge,
 };
 
 class DisplayHandler
@@ -39,11 +59,14 @@ public:
   void display();
   void clearScreen();
 
-  void setCurrentData(std::vector<std::pair<String, String>> newData);
-  std::vector<std::pair<String, String>> getCurrentData();
+  void moveGaugeCursor(int gaugeIndex);
+  void clearGaugeCursor();
 
-  void setCurrentGauge(GaugeView newGauge);
-  GaugeView getCurrentGauge();
+  void setCurrentData(std::vector<std::pair<GaugeData, String>> newData);
+  std::vector<std::pair<GaugeData, String>> getCurrentData();
+
+  void setCurrentView(GaugeView newGauge);
+  GaugeView getCurrentView();
 
 private:
   const int _screenHeight;
@@ -51,14 +74,28 @@ private:
 
   GC9A01A_t3n _tft;
 
-  GaugeView _currentGauge;
-  bool _gaugeUpdated;
-  std::vector<std::pair<String, String>> _currentData;
-  std::vector<std::pair<String, String>> _oldData;
+  GaugeView _currentGaugeView;
+  bool _gaugeViewUpdated;
+  std::vector<std::pair<GaugeData, String>> _currentData;
+  std::vector<std::pair<GaugeData, String>> _oldData;
   bool _dataUpdated;
+  int _gaugeCursorIndex;
+
+  void _displayDashboard();
+  void _refreshDashboard();
 
   void _displayQuad();
   void _refreshQuad();
 
-  int _getCenterOffset(const FontSize& fontSize,const int& length) const;
+  void _displayDual();
+  void _refreshDual();
+
+  void _displaySingle();
+  void _refreshSingle();
+
+  void _highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor);
+  void _highlightDualGauge(uint16_t textColor, uint16_t backgroundColor);
+  void _highlightSingleGauge(uint16_t textColor, uint16_t backgroundColor);
+
+  int _getCenterOffset(FontSize fontSize, int length) const;
 };
