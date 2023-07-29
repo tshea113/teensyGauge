@@ -18,7 +18,7 @@ void DisplayHandler::displayStartupScreen()
 {
   _tft.begin();
   clearScreen();
-  _tft.drawBitmap(20, 98, miata_logo, 200, 44, RED);
+  _tft.drawBitmap(20, 98, miata_logo, 200, 44, GC9A01A_RED);
 }
 
 void DisplayHandler::display()
@@ -50,7 +50,7 @@ void DisplayHandler::display()
 
 void DisplayHandler::clearScreen()
 {
-  _tft.fillScreen(BLACK);
+  _tft.fillScreen(GC9A01A_BLACK);
 }
 
 // Moves the cursor from the current gauge to the provided new index
@@ -59,14 +59,14 @@ void DisplayHandler::moveGaugeCursor(int gaugeIndex)
   switch (_currentGaugeView)
   {
   case kQuadGauge:
-    _highlightQuadGauge(WHITE, BLACK);
+    _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     _gaugeCursorIndex = gaugeIndex;
-    _highlightQuadGauge(BLACK, WHITE);
+    _highlightQuadGauge(GC9A01A_BLACK, GC9A01A_WHITE);
     break;
   case kDualGauge:
-    _highlightDualGauge(WHITE, BLACK);
+    _highlightDualGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     _gaugeCursorIndex = gaugeIndex;
-    _highlightDualGauge(BLACK, WHITE);
+    _highlightDualGauge(GC9A01A_BLACK, GC9A01A_WHITE);
     break;
   default:
     Serial.println("Cursor not supported on this view!");
@@ -78,10 +78,10 @@ void DisplayHandler::clearGaugeCursor()
   switch (_currentGaugeView)
   {
   case kQuadGauge:
-    _highlightQuadGauge(WHITE, BLACK);
+    _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     break;
   case kDualGauge:
-    _highlightDualGauge(WHITE, BLACK);
+    _highlightDualGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     break;
   default:
     Serial.println("Cursor not supported on this view!");
@@ -125,11 +125,11 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
   // We need to redraw everything if the data length changes.
   if (_oldData[dataIndex].second.length() != _currentData[dataIndex].second.length())
   {
-    _tft.setTextColor(BLACK);
+    _tft.setTextColor(GC9A01A_BLACK);
     _tft.setCursor(cursorX - _getCenterOffset(fontSize, _oldData[dataIndex].second.length()), cursorY);
     _tft.println(_oldData[dataIndex].second);
 
-    _tft.setTextColor(WHITE);
+    _tft.setTextColor(GC9A01A_WHITE);
     _tft.setCursor(cursorX - _getCenterOffset(fontSize, _currentData[dataIndex].second.length()), cursorY);
     _tft.println(_currentData[dataIndex].second);
   }
@@ -141,11 +141,11 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
     {
       if (_oldData[dataIndex].second.charAt(i) != _currentData[dataIndex].second.charAt(i))
       {
-        _tft.setTextColor(BLACK);
+        _tft.setTextColor(GC9A01A_BLACK);
         _tft.setCursor(cursorX - dataStart + (_getFontWidth(fontSize) * i), cursorY);
         _tft.println(_oldData[dataIndex].second.charAt(i));
 
-        _tft.setTextColor(WHITE);
+        _tft.setTextColor(GC9A01A_WHITE);
         _tft.setCursor(cursorX - dataStart + (_getFontWidth(fontSize) * i), cursorY);
         _tft.write(_currentData[dataIndex].second.charAt(i));
       }
@@ -157,7 +157,7 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
 void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
   _tft.setTextSize(fontSize);
-  _tft.setTextColor(WHITE);
+  _tft.setTextColor(GC9A01A_WHITE);
 
   _tft.setCursor(cursorX - _getCenterOffset(fontSize, _currentData[dataIndex].second.length()), cursorY);
   _tft.println(_currentData[dataIndex].second);
@@ -167,7 +167,7 @@ void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, in
 void DisplayHandler::_drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
   _tft.setTextSize(fontSize);
-  _tft.setTextColor(WHITE);
+  _tft.setTextColor(GC9A01A_WHITE);
 
   _tft.setCursor(cursorX - _getCenterOffset(fontSize, GaugeLabels[_currentData[dataIndex].first].length()), cursorY);
   _tft.println(GaugeLabels[_currentData[dataIndex].first]);
@@ -213,7 +213,7 @@ void DisplayHandler::_displayDashboard()
   clearScreen();
 
   _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(WHITE);
+  _tft.setTextColor(GC9A01A_WHITE);
 
   _tft.setCursor(5, _screenHeight / 2);
 
@@ -224,8 +224,8 @@ void DisplayHandler::_drawQuad()
 {
   clearScreen();
 
-  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
-  _tft.drawFastVLine(_screenWidth / 2, 0, _screenHeight, WHITE);
+  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, GC9A01A_WHITE);
+  _tft.drawFastVLine(_screenWidth / 2, 0, _screenHeight, GC9A01A_WHITE);
 
   if (_currentData.size() < 4)
   {
@@ -271,7 +271,7 @@ void DisplayHandler::_drawDual()
 {
   clearScreen();
 
-  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
+  _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, GC9A01A_WHITE);
 
   if (_currentData.size() < 2)
   {
