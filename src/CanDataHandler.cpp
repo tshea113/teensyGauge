@@ -1,5 +1,6 @@
 #include "CanDataHandler.h"
 
+#include <Chrono.h>
 #include <FlexCAN_T4.h>
 
 FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
@@ -7,8 +8,6 @@ FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> can;
 constexpr uint32_t kBaseID = 1520; // This is set in megasquirt (typically 1520)
 
 MegaCAN_broadcast_message_t CanDataHandler::_bCastMsg = {};
-
-bool CanDataHandler::_newData = false;
 MegaCAN CanDataHandler::_mega_can(kBaseID);
 
 void CanDataHandler::initCan(int canBaud)
@@ -57,8 +56,6 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
       break;
     };
   }
-  // Data is no longer new, so we need to reset the flag.
-  _newData = false;
 
   return data;
 }
@@ -70,16 +67,5 @@ void CanDataHandler::canMShandler(const CAN_message_t& msg)
   {
     // broadcast data from MS does not use extended flag, therefore this should be broadcast data from MS
     _mega_can.getBCastData(msg.id, msg.buf, _bCastMsg);
-    _newData = true;
   }
-}
-
-void CanDataHandler::setNewData(bool newData)
-{
-  _newData = newData;
-}
-
-bool CanDataHandler::getNewData()
-{
-  return _newData;
 }
