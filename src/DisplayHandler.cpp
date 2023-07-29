@@ -6,6 +6,10 @@ DisplayHandler::DisplayHandler(int _tft_RST, int _tft_DC, int _tft_CS, int _scre
   // Need to keep track of the previously highlighted gauge when moving cursors. Setting -1 indicates not in use.
   _gaugeCursorIndex = -1;
 
+  // GaugeMin and GaugeMax window the selectable gauges. Stuff in development can be put outside of this window
+  // temporarily.
+  _currentGaugeView = kGaugeMin;
+
   // We need to draw the first gauge.
   _gaugeViewUpdated = true;
 }
@@ -31,12 +35,10 @@ void DisplayHandler::display()
     _gaugeViewUpdated ? _displayQuad() : _refreshQuad();
     break;
   case kDualGauge:
-    if (_gaugeViewUpdated)
-      _displayDual();
+    _gaugeViewUpdated ? _displayDual() : _refreshDual();
     break;
   case kSingleGauge:
-    if (_gaugeViewUpdated)
-      _displaySingle();
+    _gaugeViewUpdated ? _displaySingle() : _refreshSingle();
     break;
   default:
     Serial.print(_currentGaugeView);
@@ -191,7 +193,7 @@ void DisplayHandler::_refreshQuad()
     // To avoid flickering:
     // - Only update the data if it has changed
     // - Black out only the old data pixels
-    if (_oldData[0] != _currentData[0])
+    if (_oldData[0].second != _currentData[0].second)
     {
       _tft.setTextColor(BLACK);
       _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[0].second.length()),
@@ -203,7 +205,7 @@ void DisplayHandler::_refreshQuad()
                      (_screenHeight / 2) - 50);
       _tft.println(_currentData[0].second);
     }
-    if (_oldData[1] != _currentData[1])
+    if (_oldData[1].second != _currentData[1].second)
     {
       _tft.setTextColor(BLACK);
       _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[1].second.length()),
@@ -216,7 +218,7 @@ void DisplayHandler::_refreshQuad()
                      (_screenHeight / 2) - 50);
       _tft.println(_currentData[1].second);
     }
-    if (_oldData[2] != _currentData[2])
+    if (_oldData[2].second != _currentData[2].second)
     {
       _tft.setTextColor(BLACK);
       _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[2].second.length()),
@@ -228,7 +230,7 @@ void DisplayHandler::_refreshQuad()
                      (_screenHeight / 2) + 30);
       _tft.println(_currentData[2].second);
     }
-    if (_oldData[3] != _currentData[3])
+    if (_oldData[3].second != _currentData[3].second)
     {
       _tft.setTextColor(BLACK);
       _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _oldData[3].second.length()),
@@ -280,6 +282,44 @@ void DisplayHandler::_displayDual()
   _tft.println(_currentData[1].second);
 }
 
+// Refreshes changed data on the 2 gauge view.
+void DisplayHandler::_refreshDual()
+{
+  _tft.setTextSize(kFontSizeXL);
+
+  // TODO: We should really only overwrite individual characters that change. There is still some minor flickering.
+  if (_dataUpdated)
+  {
+    // To avoid flickering:
+    // - Only update the data if it has changed
+    // - Black out only the old data pixels
+    if (_oldData[0].second != _currentData[0].second)
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _oldData[0].second.length()),
+                     (_screenHeight / 2) - 75);
+      _tft.println(_oldData[0].second);
+
+      _tft.setTextColor(WHITE);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[0].second.length()),
+                     (_screenHeight / 2) - 75);
+      _tft.println(_currentData[0].second);
+    }
+    if (_oldData[1].second != _currentData[1].second)
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _oldData[1].second.length()),
+                     (_screenHeight / 2) + 55);
+      _tft.println(_oldData[1].second);
+
+      _tft.setTextColor(WHITE);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[1].second.length()),
+                     (_screenHeight / 2) + 55);
+      _tft.println(_currentData[1].second);
+    }
+  }
+}
+
 void DisplayHandler::_displaySingle()
 {
   clearScreen();
@@ -304,6 +344,32 @@ void DisplayHandler::_displaySingle()
   _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXXXL, _currentData[0].second.length()),
                  (_screenHeight / 2) - 70);
   _tft.println(_currentData[0].second);
+}
+
+// Refreshes changed data on the 1 gauge view.
+void DisplayHandler::_refreshSingle()
+{
+  _tft.setTextSize(kFontSizeXXXL);
+
+  // TODO: We should really only overwrite individual characters that change. There is still some minor flickering.
+  if (_dataUpdated)
+  {
+    // To avoid flickering:
+    // - Only update the data if it has changed
+    // - Black out only the old data pixels
+    if (_oldData[0].second != _currentData[0].second)
+    {
+      _tft.setTextColor(BLACK);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXXXL, _oldData[0].second.length()),
+                     (_screenHeight / 2) - 70);
+      _tft.println(_oldData[0].second);
+
+      _tft.setTextColor(WHITE);
+      _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXXXL, _currentData[0].second.length()),
+                     (_screenHeight / 2) - 70);
+      _tft.println(_currentData[0].second);
+    }
+  }
 }
 
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
