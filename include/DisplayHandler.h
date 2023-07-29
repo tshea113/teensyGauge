@@ -45,7 +45,7 @@ enum GaugeView : int
   kQuadGauge = 1,
   kDualGauge = 2,
   kSingleGauge = 3,
-  kGaugeMin = kDashboard,
+  kGaugeMin = kQuadGauge,
   kGaugeMax = kSingleGauge,
 };
 
