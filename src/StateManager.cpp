@@ -7,7 +7,12 @@ StateManager::StateManager(EncoderHandler& encoderHandler, CanDataHandler& canDa
                            DisplayHandler& displayHandler)
     : _encoderHandler(encoderHandler), _canDataHandler(canDataHandler), _displayHandler(displayHandler)
 {
+  // Encoder needs to be initialized in the Idle view
   _encoderHandler.setEncoderInterval(kGaugeMin, kGaugeMax, true);
+  _encoderHandler.setEncoderValue(_displayHandler.getCurrentView());
+
+  // Need to feed the display some initial data
+  _displayHandler.setCurrentData(_loadStateData(_displayHandler.getCurrentView()));
 }
 
 // Polls for new information to update the display
@@ -22,7 +27,7 @@ void StateManager::poll()
     _scrollGauge(_encoderHandler.getEncoderValue());
   }
 
-  if (_encoderHandler.buttonPressed())
+  if (kSingleClick == _encoderHandler.buttonPressed() || kDoubleClick == _encoderHandler.buttonPressed())
   {
     _select(_encoderHandler.buttonPressed());
   }
@@ -96,10 +101,18 @@ void StateManager::_select(int numClicks)
 {
   if (kIdle == _menuState)
   {
-    // Single click brings up the gauge selection cursor
-    _menuState = kViewSelected;
-    _updateEncoder();
-    _displayHandler.moveGaugeCursor(0);
+    switch (_displayHandler.getCurrentView())
+    {
+    case kQuadGauge:
+    case kDualGauge:
+      // Single click brings up the gauge selection cursor
+      _menuState = kViewSelected;
+      _updateEncoder();
+      _displayHandler.moveGaugeCursor(0);
+      break;
+    default:
+      Serial.println("Select not supported on this gauge view!");
+    }
   }
   else if (kViewSelected == _menuState)
   {
