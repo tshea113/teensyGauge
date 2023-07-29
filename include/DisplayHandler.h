@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-const int kMaxDigits = 5;
-
 enum FontSize : int
 {
   kFontSizeSmall = 1,  // Font size 6x8
@@ -64,6 +62,10 @@ private:
   int _gaugeCursorIndex;
 
   void _refreshData(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
+  void _drawData(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
+  void _drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
+  void _highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
+                       uint16_t backgroundColor);
   int _getFontWidth(FontSize fontSize) const;
   int _getFontHeight(FontSize fontSize) const;
   int _getCenterOffset(FontSize fontSize, int length) const;
@@ -71,13 +73,13 @@ private:
   void _displayDashboard();
   void _refreshDashboard();
 
-  void _displayQuad();
+  void _drawQuad();
   void _refreshQuad();
 
-  void _displayDual();
+  void _drawDual();
   void _refreshDual();
 
-  void _displaySingle();
+  void _drawSingle();
   void _refreshSingle();
 
   void _highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor);

@@ -32,13 +32,13 @@ void DisplayHandler::display()
       _displayDashboard();
     break;
   case kQuadGauge:
-    _gaugeViewUpdated ? _displayQuad() : _refreshQuad();
+    _gaugeViewUpdated ? _drawQuad() : _refreshQuad();
     break;
   case kDualGauge:
-    _gaugeViewUpdated ? _displayDual() : _refreshDual();
+    _gaugeViewUpdated ? _drawDual() : _refreshDual();
     break;
   case kSingleGauge:
-    _gaugeViewUpdated ? _displaySingle() : _refreshSingle();
+    _gaugeViewUpdated ? _drawSingle() : _refreshSingle();
     break;
   default:
     Serial.print(_currentGaugeView);
@@ -153,6 +153,41 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
   }
 }
 
+// Draws the data given the data center X coordinate and top Y coordinate.
+void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
+{
+  _tft.setTextSize(fontSize);
+  _tft.setTextColor(WHITE);
+
+  _tft.setCursor(cursorX - _getCenterOffset(fontSize, _currentData[dataIndex].second.length()), cursorY);
+  _tft.println(_currentData[dataIndex].second);
+}
+
+// Draws the label given the data center X coordinate and top Y coordinate.
+void DisplayHandler::_drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
+{
+  _tft.setTextSize(fontSize);
+  _tft.setTextColor(WHITE);
+
+  _tft.setCursor(cursorX - _getCenterOffset(fontSize, GaugeLabels[_currentData[dataIndex].first].length()), cursorY);
+  _tft.println(GaugeLabels[_currentData[dataIndex].first]);
+}
+
+// Highlights the label given the data center X coordinate and top Y coordinate.
+void DisplayHandler::_highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
+                                     uint16_t backgroundColor)
+{
+  _tft.setTextSize(fontSize);
+  _tft.setTextColor(textColor);
+
+  _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[_currentData[dataIndex].first].length()) - 1,
+                cursorY - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[dataIndex].first].length(),
+                _getFontHeight(kFontSizeMedium), backgroundColor);
+  _tft.setCursor(cursorX - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[dataIndex].first].length()),
+                 cursorY);
+  _tft.println(GaugeLabels[_currentData[dataIndex].first]);
+}
+
 // Returns the width in pixels of a given font size
 int DisplayHandler::_getFontWidth(FontSize fontSize) const
 {
@@ -185,61 +220,27 @@ void DisplayHandler::_displayDashboard()
   _tft.println("Dashboard goes here!");
 }
 
-// Displays 4 gauges divided into 4 quadrants.
-// Labels 10 characters and data 5 characters max.
-void DisplayHandler::_displayQuad()
+void DisplayHandler::_drawQuad()
 {
   clearScreen();
 
   _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
   _tft.drawFastVLine(_screenWidth / 2, 0, _screenHeight, WHITE);
 
-  _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(WHITE);
-
   if (_currentData.size() < 4)
   {
     Serial.println("Current data has less than 4 gauges!");
   }
 
-  // Print labels
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
-                 (_screenHeight / 2) - 20);
-  _tft.println(GaugeLabels[_currentData[0].first]);
+  _drawLabel(0, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20);
+  _drawLabel(1, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 20);
+  _drawLabel(2, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6);
+  _drawLabel(3, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 6);
 
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) -
-                     _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
-                 (_screenHeight / 2) - 20);
-  _tft.println(GaugeLabels[_currentData[1].first]);
-
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[2].first].length()),
-                 (_screenHeight / 2) + 6);
-  _tft.println(GaugeLabels[_currentData[2].first]);
-
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) -
-                     _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[3].first].length()),
-                 (_screenHeight / 2) + 6);
-  _tft.println(GaugeLabels[_currentData[3].first]);
-
-  // Print data
-  _tft.setTextSize(kFontSizeLarge);
-  _tft.setTextColor(WHITE);
-
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[0].second.length()),
-                 (_screenHeight / 2) - 50);
-  _tft.println(_currentData[0].second);
-
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[1].second.length()),
-                 (_screenHeight / 2) - 50);
-  _tft.println(_currentData[1].second);
-
-  _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[2].second.length()),
-                 (_screenHeight / 2) + 30);
-  _tft.println(_currentData[2].second);
-
-  _tft.setCursor(_screenWidth - (_screenWidth / 4) - _getCenterOffset(kFontSizeLarge, _currentData[3].second.length()),
-                 (_screenHeight / 2) + 30);
-  _tft.println(_currentData[3].second);
+  _drawData(0, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 50);
+  _drawData(1, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 50);
+  _drawData(2, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 30);
+  _drawData(3, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 30);
 }
 
 // Refreshes changed data on the 4 gauge view.
@@ -266,40 +267,22 @@ void DisplayHandler::_refreshQuad()
   }
 }
 
-void DisplayHandler::_displayDual()
+void DisplayHandler::_drawDual()
 {
   clearScreen();
 
   _tft.drawFastHLine(0, _screenHeight / 2, _screenWidth, WHITE);
-
-  _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(WHITE);
 
   if (_currentData.size() < 2)
   {
     Serial.println("Current data has less than 2 gauges!");
   }
 
-  // Print labels
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
-                 (_screenHeight / 2) - _getFontHeight(kFontSizeMedium) - 4);
-  _tft.println(GaugeLabels[_currentData[0].first]);
+  _drawLabel(0, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20);
+  _drawLabel(1, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6);
 
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
-                 (_screenHeight / 2) + 6);
-  _tft.println(GaugeLabels[_currentData[1].first]);
-
-  // Print data
-  _tft.setTextSize(kFontSizeXL);
-  _tft.setTextColor(WHITE);
-
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[0].second.length()),
-                 (_screenHeight / 2) - 75);
-  _tft.println(_currentData[0].second);
-
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXL, _currentData[1].second.length()),
-                 (_screenHeight / 2) + 55);
-  _tft.println(_currentData[1].second);
+  _drawData(0, kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) - 75);
+  _drawData(1, kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) + 55);
 }
 
 // Refreshes changed data on the 2 gauge view.
@@ -318,7 +301,7 @@ void DisplayHandler::_refreshDual()
   }
 }
 
-void DisplayHandler::_displaySingle()
+void DisplayHandler::_drawSingle()
 {
   clearScreen();
 
@@ -327,21 +310,9 @@ void DisplayHandler::_displaySingle()
     Serial.println("Current data has less than 1 gauge!");
   }
 
-  // Print label
-  _tft.setTextSize(kFontSizeLarge);
-  _tft.setTextColor(WHITE);
+  _drawLabel(0, kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) + 55);
 
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeLarge, GaugeLabels[_currentData[0].first].length()),
-                 (_screenHeight / 2) + 55);
-  _tft.println(GaugeLabels[_currentData[0].first]);
-
-  // Print data
-  _tft.setTextSize(kFontSizeXXXL);
-  _tft.setTextColor(WHITE);
-
-  _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeXXXL, _currentData[0].second.length()),
-                 (_screenHeight / 2) - 70);
-  _tft.println(_currentData[0].second);
+  _drawData(0, kFontSizeXXXL, _screenWidth / 2, (_screenHeight / 2) - 70);
 }
 
 // Refreshes changed data on the 1 gauge view.
@@ -359,49 +330,23 @@ void DisplayHandler::_refreshSingle()
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
 void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor)
 {
-  _tft.setTextColor(textColor);
-  _tft.setTextSize(kFontSizeMedium);
   switch (_gaugeCursorIndex)
   {
   case 0:
-    _tft.fillRect(
-        (_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()) - 1,
-        (_screenHeight / 2) - 20 - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[0].first].length(),
-        _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
-                   (_screenHeight / 2) - 20);
-    _tft.println(GaugeLabels[_currentData[0].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20, textColor,
+                    backgroundColor);
     break;
   case 1:
-    _tft.fillRect(_screenWidth - (_screenWidth / 4) -
-                      _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()) - 1,
-                  (_screenHeight / 2) - 20 - 1,
-                  _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[1].first].length(),
-                  _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor(_screenWidth - (_screenWidth / 4) -
-                       _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
-                   (_screenHeight / 2) - 20);
-    _tft.println(GaugeLabels[_currentData[1].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 20,
+                    textColor, backgroundColor);
     break;
   case 2:
-    _tft.fillRect(
-        (_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[2].first].length()) - 1,
-        (_screenHeight / 2) + 6 - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[2].first].length(),
-        _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor((_screenWidth / 4) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[2].first].length()),
-                   (_screenHeight / 2) + 6);
-    _tft.println(GaugeLabels[_currentData[2].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6, textColor,
+                    backgroundColor);
     break;
   case 3:
-    _tft.fillRect(_screenWidth - (_screenWidth / 4) -
-                      _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[3].first].length()) - 1,
-                  (_screenHeight / 2) + 6 - 1,
-                  _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[3].first].length(),
-                  _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor(_screenWidth - (_screenWidth / 4) -
-                       _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[3].first].length()),
-                   (_screenHeight / 2) + 6);
-    _tft.println(GaugeLabels[_currentData[3].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 6,
+                    textColor, backgroundColor);
     break;
   }
 }
@@ -409,27 +354,15 @@ void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t background
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
 void DisplayHandler::_highlightDualGauge(uint16_t textColor, uint16_t backgroundColor)
 {
-  _tft.setTextColor(textColor);
-  _tft.setTextSize(kFontSizeMedium);
   switch (_gaugeCursorIndex)
   {
   case 0:
-    _tft.fillRect(
-        (_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()) - 1,
-        (_screenHeight / 2) - 20 - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[0].first].length(),
-        _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[0].first].length()),
-                   (_screenHeight / 2) - 20);
-    _tft.println(GaugeLabels[_currentData[0].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20, textColor,
+                    backgroundColor);
     break;
   case 1:
-    _tft.fillRect(
-        (_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()) - 1,
-        (_screenHeight / 2) + 6 - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[1].first].length(),
-        _getFontHeight(kFontSizeMedium), backgroundColor);
-    _tft.setCursor((_screenWidth / 2) - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[1].first].length()),
-                   (_screenHeight / 2) + 6);
-    _tft.println(GaugeLabels[_currentData[1].first]);
+    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6, textColor,
+                    backgroundColor);
     break;
   }
 }
