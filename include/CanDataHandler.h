@@ -30,7 +30,7 @@ enum GaugeData : int
 };
 
 const std::vector<String> GaugeLabels = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
-                                         "Voltage",    "TPS",        "Knock",      "Barometer",  "EGO Corr", "IAC",
+                                         "Volts",      "TPS",        "Knock",      "Baro",       "EGO Corr", "IAC",
                                          "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing"};
 
 class CanDataHandler
