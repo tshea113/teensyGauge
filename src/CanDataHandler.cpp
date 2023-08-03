@@ -45,6 +45,9 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
     case kMAT:
       data.push_back({kMAT, _bCastMsg.mat});
       break;
+    case kVoltage:
+      data.push_back({kVoltage, _bCastMsg.batt});
+      break;
     case kTPS:
       data.push_back({kTPS, _bCastMsg.tps});
       break;
