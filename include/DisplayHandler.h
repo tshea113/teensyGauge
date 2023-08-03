@@ -25,7 +25,7 @@ enum GaugeView : int
   kQuadGauge = 1,
   kDualGauge = 2,
   kSingleGauge = 3,
-  kGaugeMin = kQuadGauge,
+  kGaugeMin = kDashboard,
   kGaugeMax = kSingleGauge,
 };
 
@@ -70,7 +70,7 @@ private:
   int _getFontHeight(FontSize fontSize) const;
   int _getCenterOffset(FontSize fontSize, int length) const;
 
-  void _displayDashboard();
+  void _drawDashboard();
   void _refreshDashboard();
 
   void _drawQuad();

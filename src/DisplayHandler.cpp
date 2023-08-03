@@ -29,7 +29,7 @@ void DisplayHandler::display()
   {
   case kDashboard:
     if (_gaugeViewUpdated)
-      _displayDashboard();
+      _drawDashboard();
     break;
   case kQuadGauge:
     _gaugeViewUpdated ? _drawQuad() : _refreshQuad();
@@ -208,16 +208,29 @@ int DisplayHandler::_getCenterOffset(FontSize fontSize, int length) const
   return (length * _getFontWidth(fontSize)) / 2;
 }
 
-void DisplayHandler::_displayDashboard()
+void DisplayHandler::_drawDashboard()
 {
   clearScreen();
 
-  _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(GC9A01A_WHITE);
+  if (_currentData.size() < 5)
+  {
+    Serial.println("Current data has less than 5 gauges!");
+  }
 
-  _tft.setCursor(5, _screenHeight / 2);
+  _drawData(0, kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) - 90);
+  _drawLabel(0, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 60);
 
-  _tft.println("Dashboard goes here!");
+  _drawData(1, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 40);
+  _drawLabel(1, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 10);
+
+  _drawData(2, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 20);
+  _drawLabel(2, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 50);
+
+  _drawData(3, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 40);
+  _drawLabel(3, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 10);
+
+  _drawData(4, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
+  _drawLabel(4, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 50);
 }
 
 void DisplayHandler::_drawQuad()
