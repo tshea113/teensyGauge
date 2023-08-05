@@ -22,7 +22,8 @@ enum class GaugeData : int
   kIdleTarget = 14,
   kAfrTarget = 15,
   kTiming = 16,
-  kEngine = 17,
+  kFan = 17,
+  kWUE = 18
 };
 
 enum class Engine : uint8_t
@@ -107,6 +108,6 @@ enum class Status8 : uint8_t
   kVSSLaunch = 5,
 };
 
-const std::vector<String> GaugeLabels = {"RPM",        "AFR",        "Coolant",    "MAP",        "MAT",      "Boost",
-                                         "Volts",      "TPS",        "Knock",      "Baro",       "EGO Corr", "IAC",
-                                         "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing",   "Engine"};
+const std::vector<String> GaugeLabels = {
+    "RPM",      "AFR", "Coolant",    "MAP",        "MAT",        "Boost",      "Volts",  "TPS", "Knock", "Baro",
+    "EGO Corr", "IAC", "Sprk Dwell", "Boost Duty", "Idl Target", "AFR Target", "Timing", "Fan", "WUE"};

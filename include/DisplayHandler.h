@@ -11,12 +11,12 @@
 
 enum class FontSize : int
 {
-  kFontSizeSmall = 1,        // Font size 6x8
-  kFontSizeMedium = 2,       // Font size 12x16
-  kFontSizeLarge = 3,        // Font size 18x24
-  kFontSizeXL = 4, // Font size 24x36
-  kFontSizeXXL = 5,          // Font size 30x44
-  kFontSizeXXXL = 6,         // Font size 36x52
+  kFontSizeSmall = 1,  // Font size 6x8
+  kFontSizeMedium = 2, // Font size 12x16
+  kFontSizeLarge = 3,  // Font size 18x24
+  kFontSizeXL = 4,     // Font size 24x36
+  kFontSizeXXL = 5,    // Font size 30x44
+  kFontSizeXXXL = 6,   // Font size 36x52
 };
 
 enum class GaugeView : int
@@ -66,7 +66,8 @@ private:
   void _drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
   void _highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
                        uint16_t backgroundColor);
-  void _drawIcon();
+  void _drawIcon(int dataIndex, const uint8_t* bitmap, int iconHeight, int iconWidth, int cursorX, int cursorY,
+                 int color);
   int _getFontWidth(FontSize fontSize) const;
   int _getFontHeight(FontSize fontSize) const;
   int _getCenterOffset(FontSize fontSize, int length) const;

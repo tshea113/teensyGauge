@@ -54,6 +54,11 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
     case GaugeData::kCLT:
       data.push_back({GaugeData::kCLT, _bCastMsg.clt});
       break;
+    case GaugeData::kFan:
+      data.push_back({GaugeData::kFan, bitRead(_bCastMsg.status6, int(Status6::kFan))});
+      break;
+    case GaugeData::kWUE:
+      data.push_back({GaugeData::kWUE, bitRead(_bCastMsg.engine, int(Engine::kWUE))});
     default:
       break;
     };

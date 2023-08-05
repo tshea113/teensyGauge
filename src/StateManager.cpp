@@ -81,7 +81,8 @@ std::vector<std::pair<GaugeData, String>> StateManager::_loadStateData(GaugeView
   switch (state)
   {
   case GaugeView::kDashboard:
-    currentGauges = {GaugeData::kAFR, GaugeData::kCLT, GaugeData::kMAT, GaugeData::kMAP, GaugeData::kVoltage};
+    currentGauges = {GaugeData::kAFR,     GaugeData::kCLT, GaugeData::kMAT, GaugeData::kMAP,
+                     GaugeData::kVoltage, GaugeData::kFan, GaugeData::kWUE};
     break;
   case GaugeView::kQuadGauge:
     currentGauges = {GaugeData::kRPM, GaugeData::kTPS, GaugeData::kMAP, GaugeData::kCLT};

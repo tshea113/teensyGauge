@@ -118,6 +118,12 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
 {
   _tft.setTextSize(int(fontSize));
 
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
   // To avoid flickering:
   // - Only update the data if it has changed
   // - Black out only the old data pixels
@@ -156,6 +162,12 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
 // Draws the data given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
   _tft.setTextSize(int(fontSize));
   _tft.setTextColor(GC9A01A_WHITE);
 
@@ -166,6 +178,12 @@ void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, in
 // Draws the label given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
   _tft.setTextSize(int(fontSize));
   _tft.setTextColor(GC9A01A_WHITE);
 
@@ -174,12 +192,34 @@ void DisplayHandler::_drawLabel(int dataIndex, FontSize fontSize, int cursorX, i
   _tft.println(GaugeLabels[int(_currentData[dataIndex].first)]);
 }
 
+// Draws an icon if the data at the current index is active.
+void DisplayHandler::_drawIcon(int dataIndex, const uint8_t* bitmap, int iconHeight, int iconWidth, int cursorX,
+                               int cursorY, int color)
+{
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  if (_currentData[dataIndex].second == 1)
+  {
+    _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, color);
+  }
+}
+
 // Highlights the label given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
                                      uint16_t backgroundColor)
 {
   _tft.setTextSize(int(fontSize));
   _tft.setTextColor(textColor);
+
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
 
   _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[int(_currentData[dataIndex].first)].length()) - 1,
                 cursorY - 1,
@@ -235,8 +275,8 @@ void DisplayHandler::_drawDashboard()
   _drawData(4, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
   _drawLabel(4, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 50);
 
-  _tft.drawBitmap(_screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, fan_icon, 32, 32, GC9A01A_YELLOW);
-  _tft.drawBitmap((_screenWidth / 2) - 16, (_screenHeight / 2) + 80, cold_icon, 32, 32, GC9A01A_BLUE);
+  _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_YELLOW);
+  _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
 }
 
 void DisplayHandler::_drawQuad()
