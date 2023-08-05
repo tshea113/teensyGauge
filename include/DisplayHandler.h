@@ -1,7 +1,8 @@
 #pragma once
 
-#include "CanDataHandler.h"
 #include "ProgramMemory.h"
+
+#include <CanDataHandler.h>
 
 #include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>

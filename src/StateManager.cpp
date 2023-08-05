@@ -1,5 +1,7 @@
 #include "StateManager.h"
 
+#include <EncoderHandler.h>
+
 #include <utility>
 #include <vector>
 
