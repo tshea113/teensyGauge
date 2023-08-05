@@ -11,8 +11,8 @@ StateManager::StateManager(EncoderHandler& encoderHandler, CanDataHandler& canDa
     : _encoderHandler(encoderHandler), _canDataHandler(canDataHandler), _displayHandler(displayHandler)
 {
   // Encoder needs to be initialized in the Idle view
-  _encoderHandler.setEncoderInterval(kGaugeMin, kGaugeMax, true);
-  _encoderHandler.setEncoderValue(_displayHandler.getCurrentView());
+  _encoderHandler.setEncoderInterval(int(GaugeView::kGaugeMin), int(GaugeView::kGaugeMax), true);
+  _encoderHandler.setEncoderValue(int(_displayHandler.getCurrentView()));
 
   // Need to feed the display some initial data
   _displayHandler.setCurrentData(_loadStateData(_displayHandler.getCurrentView()));
@@ -80,17 +80,17 @@ std::vector<std::pair<GaugeData, String>> StateManager::_loadStateData(GaugeView
   // TODO: This should come from some cached value, so that users don't have to set this up every power cycle
   switch (state)
   {
-  case kDashboard:
-    currentGauges = {kAFR, kCLT, kMAT, kMAP, kVoltage};
+  case GaugeView::kDashboard:
+    currentGauges = {GaugeData::kAFR, GaugeData::kCLT, GaugeData::kMAT, GaugeData::kMAP, GaugeData::kVoltage};
     break;
-  case kQuadGauge:
-    currentGauges = {kRPM, kTPS, kMAP, kCLT};
+  case GaugeView::kQuadGauge:
+    currentGauges = {GaugeData::kRPM, GaugeData::kTPS, GaugeData::kMAP, GaugeData::kCLT};
     break;
-  case kDualGauge:
-    currentGauges = {kRPM, kTPS};
+  case GaugeView::kDualGauge:
+    currentGauges = {GaugeData::kRPM, GaugeData::kTPS};
     break;
-  case kSingleGauge:
-    currentGauges = {kRPM};
+  case GaugeView::kSingleGauge:
+    currentGauges = {GaugeData::kRPM};
     break;
   default:
     Serial.println("No stored data for this given state!");
@@ -106,8 +106,8 @@ void StateManager::_select(int numClicks)
   {
     switch (_displayHandler.getCurrentView())
     {
-    case kQuadGauge:
-    case kDualGauge:
+    case GaugeView::kQuadGauge:
+    case GaugeView::kDualGauge:
       // Single click brings up the gauge selection cursor
       _menuState = kViewSelected;
       _updateEncoder();
@@ -138,18 +138,18 @@ void StateManager::_updateEncoder()
 {
   if (kIdle == _menuState)
   {
-    _encoderHandler.setEncoderInterval(kGaugeMin, kGaugeMax, true);
-    _encoderHandler.setEncoderValue(_displayHandler.getCurrentView());
+    _encoderHandler.setEncoderInterval(int(GaugeView::kGaugeMin), int(GaugeView::kGaugeMax), true);
+    _encoderHandler.setEncoderValue(int(_displayHandler.getCurrentView()));
   }
   if (kViewSelected == _menuState)
   {
     switch (_displayHandler.getCurrentView())
     {
-    case kQuadGauge:
+    case GaugeView::kQuadGauge:
       _encoderHandler.setEncoderInterval(0, 3, true);
       _encoderHandler.setEncoderValue(0);
       break;
-    case kDualGauge:
+    case GaugeView::kDualGauge:
       _encoderHandler.setEncoderInterval(0, 1, true);
       _encoderHandler.setEncoderValue(0);
       break;

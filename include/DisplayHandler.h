@@ -9,17 +9,17 @@
 #include <utility>
 #include <vector>
 
-enum FontSize : int
+enum class FontSize : int
 {
-  kFontSizeSmall = 1,  // Font size 6x8
-  kFontSizeMedium = 2, // Font size 12x16
-  kFontSizeLarge = 3,  // Font size 18x24
-  kFontSizeXL = 4,     // Font size 24x36
-  kFontSizeXXL = 5,    // Font size 30x44
-  kFontSizeXXXL = 6,   // Font size 36x52
+  kFontSizeSmall = 1,        // Font size 6x8
+  kFontSizeMedium = 2,       // Font size 12x16
+  kFontSizeLarge = 3,        // Font size 18x24
+  kFontSizeXL = 4, // Font size 24x36
+  kFontSizeXXL = 5,          // Font size 30x44
+  kFontSizeXXXL = 6,         // Font size 36x52
 };
 
-enum GaugeView : int
+enum class GaugeView : int
 {
   kDashboard = 0,
   kQuadGauge = 1,

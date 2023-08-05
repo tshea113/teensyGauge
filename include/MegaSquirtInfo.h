@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <vector>
 
-enum GaugeData : int
+enum class GaugeData : int
 {
   kRPM = 0,
   kAFR = 1,
@@ -25,7 +25,7 @@ enum GaugeData : int
   kEngine = 17,
 };
 
-enum Engine : uint8_t
+enum class Engine : uint8_t
 {
   kReady = 0,
   kCrank = 1,
@@ -37,7 +37,7 @@ enum Engine : uint8_t
   kMapDecelEnrich = 7,
 };
 
-enum Status1 : uint8_t
+enum class Status1 : uint8_t
 {
   kNeedBurn = 0,
   kLostData = 1,
@@ -49,7 +49,7 @@ enum Status1 : uint8_t
   kFullRPMSynced = 7,
 };
 
-enum Status2 : uint8_t
+enum class Status2 : uint8_t
 {
   kN2OStage1 = 0,
   kN2OStage2 = 1,
@@ -61,7 +61,7 @@ enum Status2 : uint8_t
   kCLIdle = 7,
 };
 
-enum Status3 : uint8_t
+enum class Status3 : uint8_t
 {
   kFuelCut = 0,
   kTLog = 1,
@@ -73,7 +73,7 @@ enum Status3 : uint8_t
   kLaunchOn = 7,
 };
 
-enum Status6 : uint8_t
+enum class Status6 : uint8_t
 {
   kEGTWarn = 0,
   kEGTShutdown = 1,
@@ -85,7 +85,7 @@ enum Status6 : uint8_t
   kMAPSampleError = 7,
 };
 
-enum Status7 : uint8_t
+enum class Status7 : uint8_t
 {
   kVVT1Error = 0,
   kVVT2Error = 1,
@@ -97,7 +97,7 @@ enum Status7 : uint8_t
   kLimpMode = 7,
 };
 
-enum Status8 : uint8_t
+enum class Status8 : uint8_t
 {
   kInjectorsDisableMode = 0,
   kSparkDisableMode = 1,
