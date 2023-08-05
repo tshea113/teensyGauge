@@ -1,5 +1,6 @@
 #include "StateManager.h"
 
+#include <CanDataHandler.h>
 #include <EncoderHandler.h>
 
 #include <utility>

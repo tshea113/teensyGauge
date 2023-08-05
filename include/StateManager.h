@@ -1,8 +1,10 @@
 #pragma once
 
-#include <CanDataHandler.h>
+#include "MegaSquirtInfo.h"
+
 #include <DisplayHandler.h>
 
+class CanDataHandler;
 class EncoderHandler;
 
 // This is used to track the current state of the UI.

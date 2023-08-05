@@ -1,8 +1,7 @@
 #pragma once
 
+#include "MegaSquirtInfo.h"
 #include "ProgramMemory.h"
-
-#include <CanDataHandler.h>
 
 #include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>
@@ -67,6 +66,7 @@ private:
   void _drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
   void _highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
                        uint16_t backgroundColor);
+  void _drawIcon();
   int _getFontWidth(FontSize fontSize) const;
   int _getFontHeight(FontSize fontSize) const;
   int _getCenterOffset(FontSize fontSize, int length) const;

@@ -231,6 +231,9 @@ void DisplayHandler::_drawDashboard()
 
   _drawData(4, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
   _drawLabel(4, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 50);
+
+  _tft.drawBitmap(_screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, fan_icon, 32, 32, GC9A01A_YELLOW);
+  _tft.drawBitmap((_screenWidth / 2) - 16, (_screenHeight / 2) + 80, cold_icon, 32, 32, GC9A01A_BLUE);
 }
 
 void DisplayHandler::_drawQuad()
