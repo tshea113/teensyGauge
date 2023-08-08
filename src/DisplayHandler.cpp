@@ -28,8 +28,7 @@ void DisplayHandler::display()
   switch (_currentGaugeView)
   {
   case GaugeView::kDashboard:
-    if (_gaugeViewUpdated)
-      _drawDashboard();
+    _gaugeViewUpdated ? _drawDashboard() : _refreshDashboard();
     break;
   case GaugeView::kQuadGauge:
     _gaugeViewUpdated ? _drawQuad() : _refreshQuad();
@@ -277,6 +276,56 @@ void DisplayHandler::_drawDashboard()
 
   _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_YELLOW);
   _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
+}
+
+void DisplayHandler::_refreshDashboard()
+{
+  if (_dataUpdated)
+  {
+    if (_oldData[0].second != _currentData[0].second)
+    {
+      _refreshData(0, FontSize::kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) - 90);
+    }
+    if (_oldData[1].second != _currentData[1].second)
+    {
+      _refreshData(1, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 40);
+    }
+    if (_oldData[2].second != _currentData[2].second)
+    {
+      _refreshData(2, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 20);
+    }
+    if (_oldData[3].second != _currentData[3].second)
+    {
+      _refreshData(3, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 40);
+    }
+    if (_oldData[4].second != _currentData[4].second)
+    {
+      _refreshData(4, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
+    }
+    if (_oldData[5].second != _currentData[5].second)
+    {
+      if (_currentData[5].second == 1)
+      {
+        _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72,
+                  GC9A01A_YELLOW);
+      }
+      else
+      {
+        _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_BLACK);
+      }
+    }
+    if (_oldData[6].second != _currentData[6].second)
+    {
+      if (_currentData[6].second == 1)
+      {
+        _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
+      }
+      else
+      {
+        _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLACK);
+      }
+    }
+  }
 }
 
 void DisplayHandler::_drawQuad()
