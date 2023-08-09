@@ -205,6 +205,10 @@ void DisplayHandler::_drawIcon(int dataIndex, const uint8_t* bitmap, int iconHei
   {
     _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, color);
   }
+  else
+  {
+    _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, GC9A01A_BLACK);
+  }
 }
 
 // Highlights the label given the data center X coordinate and top Y coordinate.
@@ -304,26 +308,11 @@ void DisplayHandler::_refreshDashboard()
     }
     if (_oldData[5].second != _currentData[5].second)
     {
-      if (_currentData[5].second == 1)
-      {
-        _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72,
-                  GC9A01A_YELLOW);
-      }
-      else
-      {
-        _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_BLACK);
-      }
+      _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_YELLOW);
     }
     if (_oldData[6].second != _currentData[6].second)
     {
-      if (_currentData[6].second == 1)
-      {
-        _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
-      }
-      else
-      {
-        _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLACK);
-      }
+      _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
     }
   }
 }
