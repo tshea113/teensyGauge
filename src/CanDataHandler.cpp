@@ -33,24 +33,32 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
   {
     switch (gauge)
     {
-    case kRPM:
-      data.push_back({kRPM, _bCastMsg.rpm});
+    case GaugeData::kRPM:
+      data.push_back({GaugeData::kRPM, _bCastMsg.rpm});
       break;
-    case kAFR:
-      data.push_back({kAFR, _bCastMsg.afr1_old});
+    case GaugeData::kAFR:
+      data.push_back({GaugeData::kAFR, _bCastMsg.afr1_old});
       break;
-    case kMAP:
-      data.push_back({kMAP, _bCastMsg.map});
+    case GaugeData::kMAP:
+      data.push_back({GaugeData::kMAP, _bCastMsg.map});
       break;
-    case kMAT:
-      data.push_back({kMAT, _bCastMsg.mat});
+    case GaugeData::kMAT:
+      data.push_back({GaugeData::kMAT, _bCastMsg.mat});
       break;
-    case kTPS:
-      data.push_back({kTPS, _bCastMsg.tps});
+    case GaugeData::kVoltage:
+      data.push_back({GaugeData::kVoltage, _bCastMsg.batt});
       break;
-    case kCLT:
-      data.push_back({kCLT, _bCastMsg.clt});
+    case GaugeData::kTPS:
+      data.push_back({GaugeData::kTPS, _bCastMsg.tps});
       break;
+    case GaugeData::kCLT:
+      data.push_back({GaugeData::kCLT, _bCastMsg.clt});
+      break;
+    case GaugeData::kFan:
+      data.push_back({GaugeData::kFan, bitRead(_bCastMsg.status6, int(Status6::kFan))});
+      break;
+    case GaugeData::kWUE:
+      data.push_back({GaugeData::kWUE, bitRead(_bCastMsg.engine, int(Engine::kWUE))});
     default:
       break;
     };

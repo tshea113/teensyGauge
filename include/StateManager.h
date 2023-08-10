@@ -1,8 +1,11 @@
 #pragma once
 
-#include <CanDataHandler.h>
+#include "MegaSquirtInfo.h"
+
 #include <DisplayHandler.h>
-#include <EncoderHandler.h>
+
+class CanDataHandler;
+class EncoderHandler;
 
 // This is used to track the current state of the UI.
 // - Idle consists of a scrollable list of views (dashboard, quad, dual, etc.).
