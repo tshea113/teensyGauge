@@ -3,6 +3,7 @@
 #include "MegaSquirtInfo.h"
 
 #include <DisplayHandler.h>
+#include <EncoderHandler.h>
 
 #include <unordered_map>
 
@@ -48,7 +49,7 @@ private:
   std::unordered_map<State, StateInfo> _stateMap;
 
   void _scrollGauge(int newValue);
-  void _select(int numClicks);
+  void _select(Clicks clicks);
   void _updateEncoder(int initialValue);
   std::vector<std::pair<GaugeData, String>> _loadStateData(GaugeView state);
   std::unordered_map<State, StateInfo>::iterator _getCurrentStateInfo(State currentState);

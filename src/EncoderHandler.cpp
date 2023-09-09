@@ -5,8 +5,8 @@ EncoderHandler::EncoderHandler(int ENC_1, int ENC_2, int ENC_B, int doubleClickS
 {
   _encoder.begin(ENC_1, ENC_2);
   _button.attach(ENC_B, INPUT_PULLUP);
-  _clicks = kNoClick;
-  _inClickEvent = false;
+  _clicks.singleClick = false;
+  _clicks.doubleClick = false;
 
   // Set some arbitrary default values
   _encoder.setLimits(0, 1, false);
@@ -17,27 +17,18 @@ EncoderHandler::EncoderHandler(int ENC_1, int ENC_2, int ENC_B, int doubleClickS
 void EncoderHandler::pollButton()
 {
   _button.update();
-  if (!_inClickEvent)
+  // When the button is first pressed, register the click and start a timer to
+  // determine if it is a double click.
+  if (_button.pressed())
   {
-    // When the button is first pressed, start a timer to determine if it is a double click
-    if (_button.pressed())
-    {
-      _clickTimer.restart();
-      _inClickEvent = true;
-    }
-  }
-  else
-  {
-    // A double click occurs when two clicks occur in the doubleClickSpeed window, otherwise it's a single click
     if (_clickTimer.hasPassed(_doubleClickSpeed))
     {
-      _clicks = kSingleClick;
-      _inClickEvent = false;
+      _clicks.singleClick = true;
+      _clickTimer.restart();
     }
-    else if (_button.pressed())
+    else
     {
-      _clicks = kDoubleClick;
-      _inClickEvent = false;
+      _clicks.doubleClick = true;
     }
   }
 }
@@ -57,12 +48,12 @@ bool EncoderHandler::encoderValueChanged()
   return _encoder.valueChanged();
 }
 
-// Returns 1 for single click, 2 for double click, and 0 for no clicks
-// Clears the click count when queried
+// Returns the struct of click information
 Clicks EncoderHandler::buttonPressed()
 {
   Clicks click = _clicks;
-  _clicks = kNoClick;
+  _clicks.singleClick = false;
+  _clicks.doubleClick = false;
   return click;
 }
 

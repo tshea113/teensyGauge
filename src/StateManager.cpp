@@ -1,7 +1,6 @@
 #include "StateManager.h"
 
 #include <CanDataHandler.h>
-#include <EncoderHandler.h>
 
 #include <utility>
 #include <vector>
@@ -39,7 +38,7 @@ void StateManager::poll()
     _scrollGauge(_currentIndex);
   }
 
-  if (kSingleClick == buttonPressed || kDoubleClick == buttonPressed)
+  if (buttonPressed.singleClick || buttonPressed.doubleClick)
   {
     _select(buttonPressed);
   }
@@ -112,7 +111,7 @@ std::vector<std::pair<GaugeData, String>> StateManager::_loadStateData(GaugeView
 }
 
 // Updates display and controls when a click is input
-void StateManager::_select(int numClicks)
+void StateManager::_select(Clicks clicks)
 {
   if (kIdle == _menuState)
   {
@@ -136,7 +135,7 @@ void StateManager::_select(int numClicks)
   }
   else if (kViewSelected == _menuState)
   {
-    if (kSingleClick == numClicks)
+    if (clicks.singleClick)
     {
       // Back arrow goes back up to top level view
       if (_encoderHandler.getMax() == _currentIndex)
@@ -164,7 +163,7 @@ void StateManager::_select(int numClicks)
   }
   else if (kItemSelected == _menuState)
   {
-    if (kSingleClick == numClicks)
+    if (clicks.singleClick)
     {
       _menuState = kViewSelected;
 
