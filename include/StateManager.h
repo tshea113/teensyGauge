@@ -41,7 +41,9 @@ private:
   DisplayHandler& _displayHandler;
 
   State _menuState;
+
   GaugeView _currentView;
+  int _currentIndex;
 
   std::unordered_map<State, StateInfo> _stateMap;
 

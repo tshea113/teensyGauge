@@ -31,11 +31,12 @@ void StateManager::poll()
 
   Clicks buttonPressed = _encoderHandler.buttonPressed();
   _currentView = _displayHandler.getCurrentView();
+  _currentIndex = _encoderHandler.getEncoderValue();
 
   // Handle user input
   if (_encoderHandler.encoderValueChanged())
   {
-    _scrollGauge(_encoderHandler.getEncoderValue());
+    _scrollGauge(_currentIndex);
   }
 
   if (kSingleClick == buttonPressed || kDoubleClick == buttonPressed)
@@ -120,7 +121,7 @@ void StateManager::_select(int numClicks)
     case GaugeView::kQuadGauge:
     case GaugeView::kDualGauge: {
       auto currentStateInfo = _getCurrentStateInfo(_menuState);
-      currentStateInfo->second.index = _encoderHandler.getEncoderValue();
+      currentStateInfo->second.index = _currentIndex;
 
       _menuState = kViewSelected;
       _updateEncoder(0);
@@ -135,31 +136,33 @@ void StateManager::_select(int numClicks)
   }
   else if (kViewSelected == _menuState)
   {
-    // Double click goes back up to top level view
-    if (kDoubleClick == numClicks)
+    if (kSingleClick == numClicks)
     {
-      _menuState = kIdle;
+      // Back arrow goes back up to top level view
+      if (_encoderHandler.getMax() == _currentIndex)
+      {
+        _menuState = kIdle;
 
-      auto currentStateInfo = _getCurrentStateInfo(_menuState);
-      _updateEncoder(currentStateInfo->second.index);
+        auto currentStateInfo = _getCurrentStateInfo(_menuState);
+        _updateEncoder(currentStateInfo->second.index);
 
-      _displayHandler.clearGaugeCursor();
-      _displayHandler.clearBackArrow();
-    }
-    // Single click selects the item
-    else if (kSingleClick == numClicks)
-    {
-      // Save the index of the previous screen
-      auto currentStateInfo = _getCurrentStateInfo(_menuState);
-      currentStateInfo->second.index = _encoderHandler.getEncoderValue();
+        _displayHandler.clearGaugeCursor();
+        _displayHandler.clearBackArrow();
+      }
+      else
+      {
+        // Save the index of the previous screen
+        auto currentStateInfo = _getCurrentStateInfo(_menuState);
+        currentStateInfo->second.index = _currentIndex;
 
-      _menuState = kItemSelected;
-      _updateEncoder(0);
+        _menuState = kItemSelected;
+        _updateEncoder(0);
+      }
     }
   }
   else if (kItemSelected == _menuState)
   {
-    if (kDoubleClick == numClicks)
+    if (kSingleClick == numClicks)
     {
       _menuState = kViewSelected;
 
@@ -197,7 +200,7 @@ void StateManager::_updateEncoder(int initialValue)
   }
   else if (kItemSelected == _menuState)
   {
-    _encoderHandler.setEncoderInterval(0, 0, true);
+    _encoderHandler.setEncoderInterval(0, 1, true);
   }
 
   _encoderHandler.setEncoderValue(initialValue);
