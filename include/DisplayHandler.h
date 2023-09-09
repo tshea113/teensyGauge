@@ -6,6 +6,7 @@
 #include <Adafruit_GC9A01A.h>
 #include <Adafruit_GFX.h>
 #include <SPI.h>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -29,6 +30,11 @@ enum class GaugeView : int
   kGaugeMax = kSingleGauge,
 };
 
+struct GaugeInfo
+{
+  std::vector<GaugeData> gauges;
+};
+
 class DisplayHandler
 {
 public:
@@ -39,6 +45,8 @@ public:
   void display();
   void clearScreen();
 
+  void createBackArrow();
+  void clearBackArrow();
   void moveGaugeCursor(int gaugeIndex);
   void clearGaugeCursor();
 
@@ -53,6 +61,8 @@ private:
   const int _screenWidth;
 
   Adafruit_GC9A01A _tft;
+
+  std::unordered_map<GaugeView, GaugeInfo> _gaugeMap;
 
   GaugeView _currentGaugeView;
   bool _gaugeViewUpdated;
@@ -87,4 +97,6 @@ private:
   void _highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor);
   void _highlightDualGauge(uint16_t textColor, uint16_t backgroundColor);
   void _highlightSingleGauge(uint16_t textColor, uint16_t backgroundColor);
+
+  void _drawBackArrow(uint16_t arrowColor, uint16_t backgroundColor);
 };

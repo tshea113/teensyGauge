@@ -6,21 +6,34 @@ EncoderHandler::EncoderHandler(int ENC_1, int ENC_2, int ENC_B, int doubleClickS
   _encoder.begin(ENC_1, ENC_2);
   _button.attach(ENC_B, INPUT_PULLUP);
   _clicks = kNoClick;
+  _inClickEvent = false;
 }
 
 void EncoderHandler::pollButton()
 {
   _button.update();
-
-  // A double click occurs when two clicks occur in the doubleClickSpeed window, otherwise it's a single click
-  if (_button.pressed())
+  if (!_inClickEvent)
   {
-    _clicks = (_clickTimer.hasPassed(_doubleClickSpeed)) ? kSingleClick : kDoubleClick;
-    _clickTimer.restart();
+    // When the button is first pressed, start a timer to determine if it is a double click
+    if (_button.pressed())
+    {
+      _clickTimer.restart();
+      _inClickEvent = true;
+    }
   }
   else
   {
-    _clicks = kNoClick;
+    // A double click occurs when two clicks occur in the doubleClickSpeed window, otherwise it's a single click
+    if (_clickTimer.hasPassed(_doubleClickSpeed))
+    {
+      _clicks = kSingleClick;
+      _inClickEvent = false;
+    }
+    else if (_button.pressed())
+    {
+      _clicks = kDoubleClick;
+      _inClickEvent = false;
+    }
   }
 }
 
@@ -40,9 +53,12 @@ bool EncoderHandler::encoderValueChanged()
 }
 
 // Returns 1 for single click, 2 for double click, and 0 for no clicks
-int EncoderHandler::buttonPressed()
+// Clears the click count when queried
+Clicks EncoderHandler::buttonPressed()
 {
-  return _clicks;
+  Clicks click = _clicks;
+  _clicks = kNoClick;
+  return click;
 }
 
 void EncoderHandler::setEncoderInterval(int lowerLimit, int upperLimit, bool periodic)

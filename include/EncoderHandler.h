@@ -26,7 +26,7 @@ public:
   void setDoubleClickSpeed(int doubleClickSpeed);
   int getDoubleClickSpeed();
 
-  int buttonPressed();
+  Clicks buttonPressed();
 
 private:
   EncoderTool::Encoder _encoder;
@@ -35,4 +35,5 @@ private:
   Chrono _clickTimer;
   Clicks _clicks;
   int _doubleClickSpeed;
+  bool _inClickEvent;
 };

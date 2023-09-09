@@ -12,6 +12,10 @@ DisplayHandler::DisplayHandler(int _tft_RST, int _tft_DC, int _tft_CS, int _scre
 
   // We need to draw the first gauge.
   _gaugeViewUpdated = true;
+
+  // TODO: Figure out how I want to use this for caching gauge selections
+  GaugeInfo info;
+  _gaugeMap.insert(std::make_pair(_currentGaugeView, info));
 }
 
 void DisplayHandler::displayStartupScreen()
@@ -50,6 +54,37 @@ void DisplayHandler::display()
 void DisplayHandler::clearScreen()
 {
   _tft.fillScreen(GC9A01A_BLACK);
+}
+
+// Draws a back arrow used for unselecting gauge views
+void DisplayHandler::createBackArrow()
+{
+  switch (_currentGaugeView)
+  {
+  case GaugeView::kQuadGauge:
+  case GaugeView::kDualGauge:
+  case GaugeView::kSingleGauge: {
+    _drawBackArrow(GC9A01A_WHITE, GC9A01A_BLACK);
+    break;
+  }
+  default:
+    Serial.println("Back arrow not supported on this view!");
+  }
+}
+
+void DisplayHandler::clearBackArrow()
+{
+  switch (_currentGaugeView)
+  {
+  case GaugeView::kQuadGauge:
+  case GaugeView::kDualGauge:
+  case GaugeView::kSingleGauge: {
+    _drawBackArrow(GC9A01A_BLACK, GC9A01A_BLACK);
+    break;
+  }
+  default:
+    Serial.println("Back arrow not supported on this view!");
+  }
 }
 
 // Moves the cursor from the current gauge to the provided new index
@@ -209,29 +244,6 @@ void DisplayHandler::_drawIcon(int dataIndex, const uint8_t* bitmap, int iconHei
   {
     _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, GC9A01A_BLACK);
   }
-}
-
-// Highlights the label given the data center X coordinate and top Y coordinate.
-void DisplayHandler::_highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
-                                     uint16_t backgroundColor)
-{
-  _tft.setTextSize(int(fontSize));
-  _tft.setTextColor(textColor);
-
-  if ((unsigned int)dataIndex >= _currentData.size())
-  {
-    Serial.println("Data index outside of range!");
-    return;
-  }
-
-  _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[int(_currentData[dataIndex].first)].length()) - 1,
-                cursorY - 1,
-                _getFontWidth(FontSize::kFontSizeMedium) * GaugeLabels[int(_currentData[dataIndex].first)].length(),
-                _getFontHeight(FontSize::kFontSizeMedium), backgroundColor);
-  _tft.setCursor(
-      cursorX - _getCenterOffset(FontSize::kFontSizeMedium, GaugeLabels[int(_currentData[dataIndex].first)].length()),
-      cursorY);
-  _tft.println(GaugeLabels[int(_currentData[dataIndex].first)]);
 }
 
 // Returns the width in pixels of a given font size
@@ -424,6 +436,29 @@ void DisplayHandler::_refreshSingle()
   }
 }
 
+// Highlights the label given the data center X coordinate and top Y coordinate.
+void DisplayHandler::_highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
+                                     uint16_t backgroundColor)
+{
+  _tft.setTextSize(int(fontSize));
+  _tft.setTextColor(textColor);
+
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[int(_currentData[dataIndex].first)].length()) - 1,
+                cursorY - 1,
+                _getFontWidth(FontSize::kFontSizeMedium) * GaugeLabels[int(_currentData[dataIndex].first)].length(),
+                _getFontHeight(FontSize::kFontSizeMedium), backgroundColor);
+  _tft.setCursor(
+      cursorX - _getCenterOffset(FontSize::kFontSizeMedium, GaugeLabels[int(_currentData[dataIndex].first)].length()),
+      cursorY);
+  _tft.println(GaugeLabels[int(_currentData[dataIndex].first)]);
+}
+
 // Highlights a gauge to be used as a cursor. Invert can be set to move the cursor.
 void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t backgroundColor)
 {
@@ -445,6 +480,9 @@ void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t background
     _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4),
                     (_screenHeight / 2) + 6, textColor, backgroundColor);
     break;
+  case 4:
+    _drawBackArrow(textColor, backgroundColor);
+    break;
   }
 }
 
@@ -461,5 +499,17 @@ void DisplayHandler::_highlightDualGauge(uint16_t textColor, uint16_t background
     _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6, textColor,
                     backgroundColor);
     break;
+  case 2:
+    _drawBackArrow(textColor, backgroundColor);
+    break;
   }
+}
+
+void DisplayHandler::_drawBackArrow(uint16_t arrowColor, uint16_t backgroundColor)
+{
+  const int kBackArrowWidth = 30;
+  const int kBackArrowHeight = 19;
+
+  _tft.drawBitmap((_screenWidth / 2) - kBackArrowWidth - 5, _screenHeight - kBackArrowHeight - 5, back, kBackArrowWidth,
+                  kBackArrowHeight, arrowColor, backgroundColor);
 }

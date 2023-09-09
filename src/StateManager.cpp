@@ -10,12 +10,17 @@ StateManager::StateManager(EncoderHandler& encoderHandler, CanDataHandler& canDa
                            DisplayHandler& displayHandler)
     : _encoderHandler(encoderHandler), _canDataHandler(canDataHandler), _displayHandler(displayHandler)
 {
+  _currentView = _displayHandler.getCurrentView();
+
   // Encoder needs to be initialized in the Idle view
   _encoderHandler.setEncoderInterval(int(GaugeView::kGaugeMin), int(GaugeView::kGaugeMax), true);
-  _encoderHandler.setEncoderValue(int(_displayHandler.getCurrentView()));
+  _encoderHandler.setEncoderValue(int(_currentView));
 
   // Need to feed the display some initial data
-  _displayHandler.setCurrentData(_loadStateData(_displayHandler.getCurrentView()));
+  _displayHandler.setCurrentData(_loadStateData(_currentView));
+
+  StateInfo info;
+  _stateMap.insert(std::make_pair(kIdle, info));
 }
 
 // Polls for new information to update the display
@@ -24,22 +29,25 @@ void StateManager::poll()
   _canDataHandler.pollCan();
   _encoderHandler.pollButton();
 
+  Clicks buttonPressed = _encoderHandler.buttonPressed();
+  _currentView = _displayHandler.getCurrentView();
+
   // Handle user input
   if (_encoderHandler.encoderValueChanged())
   {
     _scrollGauge(_encoderHandler.getEncoderValue());
   }
 
-  if (kSingleClick == _encoderHandler.buttonPressed() || kDoubleClick == _encoderHandler.buttonPressed())
+  if (kSingleClick == buttonPressed || kDoubleClick == buttonPressed)
   {
-    _select(_encoderHandler.buttonPressed());
+    _select(buttonPressed);
   }
 }
 
 // Retrieves the CAN data for the currently selected gauges and serves to the display.
 void StateManager::serveData()
 {
-  std::vector<std::pair<GaugeData, String>> currentData = _displayHandler.getCurrentData();
+  auto currentData = _displayHandler.getCurrentData();
   std::vector<GaugeData> currentGauges;
 
   for (auto gauge : currentData)
@@ -66,6 +74,8 @@ void StateManager::_scrollGauge(int newState)
   case kViewSelected:
     // Scroll through the individual gauges on a view
     _displayHandler.moveGaugeCursor(newState);
+    break;
+  case kItemSelected:
     break;
   default:
     Serial.println("This state does not support scrolling!");
@@ -105,15 +115,20 @@ void StateManager::_select(int numClicks)
 {
   if (kIdle == _menuState)
   {
-    switch (_displayHandler.getCurrentView())
+    switch (_currentView)
     {
     case GaugeView::kQuadGauge:
-    case GaugeView::kDualGauge:
-      // Single click brings up the gauge selection cursor
+    case GaugeView::kDualGauge: {
+      auto currentStateInfo = _getCurrentStateInfo(_menuState);
+      currentStateInfo->second.index = _encoderHandler.getEncoderValue();
+
       _menuState = kViewSelected;
-      _updateEncoder();
+      _updateEncoder(0);
+
       _displayHandler.moveGaugeCursor(0);
+      _displayHandler.createBackArrow();
       break;
+    }
     default:
       Serial.println("Select not supported on this gauge view!");
     }
@@ -124,8 +139,32 @@ void StateManager::_select(int numClicks)
     if (kDoubleClick == numClicks)
     {
       _menuState = kIdle;
-      _updateEncoder();
+
+      auto currentStateInfo = _getCurrentStateInfo(_menuState);
+      _updateEncoder(currentStateInfo->second.index);
+
       _displayHandler.clearGaugeCursor();
+      _displayHandler.clearBackArrow();
+    }
+    // Single click selects the item
+    else if (kSingleClick == numClicks)
+    {
+      // Save the index of the previous screen
+      auto currentStateInfo = _getCurrentStateInfo(_menuState);
+      currentStateInfo->second.index = _encoderHandler.getEncoderValue();
+
+      _menuState = kItemSelected;
+      _updateEncoder(0);
+    }
+  }
+  else if (kItemSelected == _menuState)
+  {
+    if (kDoubleClick == numClicks)
+    {
+      _menuState = kViewSelected;
+
+      auto currentStateInfo = _getCurrentStateInfo(_menuState);
+      _updateEncoder(currentStateInfo->second.index);
     }
   }
   else
@@ -135,27 +174,45 @@ void StateManager::_select(int numClicks)
 }
 
 // Updates the encoder range and current value based upon view state
-void StateManager::_updateEncoder()
+void StateManager::_updateEncoder(int initialValue)
 {
+  // Interval is dependent on the current state
   if (kIdle == _menuState)
   {
     _encoderHandler.setEncoderInterval(int(GaugeView::kGaugeMin), int(GaugeView::kGaugeMax), true);
-    _encoderHandler.setEncoderValue(int(_displayHandler.getCurrentView()));
   }
-  if (kViewSelected == _menuState)
+  else if (kViewSelected == _menuState)
   {
-    switch (_displayHandler.getCurrentView())
+    switch (_currentView)
     {
     case GaugeView::kQuadGauge:
-      _encoderHandler.setEncoderInterval(0, 3, true);
-      _encoderHandler.setEncoderValue(0);
+      _encoderHandler.setEncoderInterval(0, 4, true);
       break;
     case GaugeView::kDualGauge:
-      _encoderHandler.setEncoderInterval(0, 1, true);
-      _encoderHandler.setEncoderValue(0);
+      _encoderHandler.setEncoderInterval(0, 2, true);
       break;
     default:
       Serial.println("Encoder not valid for this view!");
     }
   }
+  else if (kItemSelected == _menuState)
+  {
+    _encoderHandler.setEncoderInterval(0, 0, true);
+  }
+
+  _encoderHandler.setEncoderValue(initialValue);
+}
+
+std::unordered_map<State, StateInfo>::iterator StateManager::_getCurrentStateInfo(State currentState)
+{
+  auto info = _stateMap.find(currentState);
+
+  if (_stateMap.end() == info)
+  {
+    StateInfo stateInfo;
+    _stateMap.insert(std::make_pair(currentState, stateInfo));
+    info = _stateMap.find(currentState);
+  }
+
+  return info;
 }
