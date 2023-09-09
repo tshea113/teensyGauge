@@ -157,6 +157,8 @@ void StateManager::_select(int numClicks)
 
         _menuState = kItemSelected;
         _updateEncoder(0);
+
+        _displayHandler.clearBackArrow();
       }
     }
   }
@@ -168,6 +170,8 @@ void StateManager::_select(int numClicks)
 
       auto currentStateInfo = _getCurrentStateInfo(_menuState);
       _updateEncoder(currentStateInfo->second.index);
+
+      _displayHandler.createBackArrow();
     }
   }
   else
