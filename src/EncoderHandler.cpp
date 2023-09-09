@@ -7,6 +7,11 @@ EncoderHandler::EncoderHandler(int ENC_1, int ENC_2, int ENC_B, int doubleClickS
   _button.attach(ENC_B, INPUT_PULLUP);
   _clicks = kNoClick;
   _inClickEvent = false;
+
+  // Set some arbitrary default values
+  _encoder.setLimits(0, 1, false);
+  _min = 0;
+  _max = 1;
 }
 
 void EncoderHandler::pollButton()
@@ -64,6 +69,8 @@ Clicks EncoderHandler::buttonPressed()
 void EncoderHandler::setEncoderInterval(int lowerLimit, int upperLimit, bool periodic)
 {
   _encoder.setLimits(lowerLimit, upperLimit, periodic);
+  _min = lowerLimit;
+  _max = upperLimit;
 }
 
 void EncoderHandler::setDoubleClickSpeed(int doubleClickSpeed)
@@ -74,4 +81,14 @@ void EncoderHandler::setDoubleClickSpeed(int doubleClickSpeed)
 int EncoderHandler::getDoubleClickSpeed()
 {
   return _doubleClickSpeed;
+}
+
+int EncoderHandler::getMin()
+{
+  return _min;
+}
+
+int EncoderHandler::getMax()
+{
+  return _max;
 }

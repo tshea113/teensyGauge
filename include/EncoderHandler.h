@@ -26,6 +26,9 @@ public:
   void setDoubleClickSpeed(int doubleClickSpeed);
   int getDoubleClickSpeed();
 
+  int getMin();
+  int getMax();
+
   Clicks buttonPressed();
 
 private:
@@ -36,4 +39,7 @@ private:
   Clicks _clicks;
   int _doubleClickSpeed;
   bool _inClickEvent;
+
+  int _min;
+  int _max;
 };
