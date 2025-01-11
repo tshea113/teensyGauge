@@ -1,11 +1,7 @@
-name: PlatformIO CI
+name: PlatformIO PR Build
 
 on:
-  release:
-    types: [published]
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   build:
