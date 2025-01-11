@@ -1,14 +1,10 @@
-name: PlatformIO CI
+name: PlatformIO PR Build
 
 on:
-  release:
-    types: [published]
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
-  ci_build:
+  pr_build:
     runs-on: ubuntu-latest
 
     steps:
