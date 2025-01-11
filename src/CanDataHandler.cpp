@@ -43,28 +43,39 @@ std::vector<std::pair<GaugeData, String>> CanDataHandler::getGaugeData(const std
   {
     switch (gauge)
     {
-    case kRPM:
-      // data.push_back({kRPM, _bCastMsg.rpm});
-      data.push_back({kRPM, counter});
+    case GaugeData::kRPM:
+      // data.push_back({GaugeData::kRPM, _bCastMsg.rpm});
+      data.push_back({GaugeData::kRPM, counter});
       break;
-    case kAFR:
-      data.push_back({kAFR, _bCastMsg.afr1_old});
+    case GaugeData::kAFR:
+      data.push_back({GaugeData::kAFR, _bCastMsg.afr1_old});
       break;
-    case kMAP:
-      // data.push_back({kMAP, _bCastMsg.map});
-      data.push_back({kMAP, counter / 2});
+    case GaugeData::kMAP:
+      // data.push_back({GaugeData::kMAP, _bCastMsg.map});
+      data.push_back({GaugeData::kMAP, counter / 2});
       break;
-    case kMAT:
-      data.push_back({kMAT, _bCastMsg.mat});
+    case GaugeData::kMAT:
+      data.push_back({GaugeData::kMAT, _bCastMsg.mat});
       break;
-    case kTPS:
-      // data.push_back({kTPS, _bCastMsg.tps});
-      data.push_back({kTPS, counter + 1});
+    case GaugeData::kVoltage:
+      data.push_back({GaugeData::kVoltage, _bCastMsg.batt});
       break;
-    case kCLT:
-      // data.push_back({kCLT, _bCastMsg.clt});
-      data.push_back({kCLT, counter + 10});
+    case GaugeData::kTPS:
+      // data.push_back({GaugeData::kTPS, _bCastMsg.tps});
+      data.push_back({GaugeData::kTPS, counter + 1});
       break;
+    case GaugeData::kCLT:
+      // data.push_back({GaugeData::kCLT, _bCastMsg.clt});
+      data.push_back({GaugeData::kCLT, counter + 10});
+      break;
+    case GaugeData::kCLT:
+      data.push_back({GaugeData::kCLT, _bCastMsg.clt});
+      break;
+    case GaugeData::kFan:
+      data.push_back({GaugeData::kFan, bitRead(_bCastMsg.status6, int(Status6::kFan))});
+      break;
+    case GaugeData::kWUE:
+      data.push_back({GaugeData::kWUE, bitRead(_bCastMsg.engine, int(Engine::kWUE))});
     default:
       break;
     };

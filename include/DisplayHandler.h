@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CanDataHandler.h"
+#include "MegaSquirtInfo.h"
 #include "ProgramMemory.h"
 
 #include <Adafruit_GC9A01A.h>
@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-enum FontSize : int
+enum class FontSize : int
 {
   kFontSizeSmall = 1,  // Font size 6x8
   kFontSizeMedium = 2, // Font size 12x16
@@ -19,13 +19,13 @@ enum FontSize : int
   kFontSizeXXXL = 6,   // Font size 36x52
 };
 
-enum GaugeView : int
+enum class GaugeView : int
 {
   kDashboard = 0,
   kQuadGauge = 1,
   kDualGauge = 2,
   kSingleGauge = 3,
-  kGaugeMin = kQuadGauge,
+  kGaugeMin = kDashboard,
   kGaugeMax = kSingleGauge,
 };
 
@@ -66,11 +66,13 @@ private:
   void _drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY);
   void _highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
                        uint16_t backgroundColor);
+  void _drawIcon(int dataIndex, const uint8_t* bitmap, int iconHeight, int iconWidth, int cursorX, int cursorY,
+                 int color);
   int _getFontWidth(FontSize fontSize) const;
   int _getFontHeight(FontSize fontSize) const;
   int _getCenterOffset(FontSize fontSize, int length) const;
 
-  void _displayDashboard();
+  void _drawDashboard();
   void _refreshDashboard();
 
   void _drawQuad();

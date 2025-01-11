@@ -8,7 +8,7 @@ DisplayHandler::DisplayHandler(int _tft_RST, int _tft_DC, int _tft_CS, int _scre
 
   // GaugeMin and GaugeMax window the selectable gauges. Stuff in development can be put outside of this window
   // temporarily.
-  _currentGaugeView = kGaugeMin;
+  _currentGaugeView = GaugeView::kGaugeMin;
 
   // We need to draw the first gauge.
   _gaugeViewUpdated = true;
@@ -27,21 +27,20 @@ void DisplayHandler::display()
   // Otherwise we are just refreshing the data.
   switch (_currentGaugeView)
   {
-  case kDashboard:
-    if (_gaugeViewUpdated)
-      _displayDashboard();
+  case GaugeView::kDashboard:
+    _gaugeViewUpdated ? _drawDashboard() : _refreshDashboard();
     break;
-  case kQuadGauge:
+  case GaugeView::kQuadGauge:
     _gaugeViewUpdated ? _drawQuad() : _refreshQuad();
     break;
-  case kDualGauge:
+  case GaugeView::kDualGauge:
     _gaugeViewUpdated ? _drawDual() : _refreshDual();
     break;
-  case kSingleGauge:
+  case GaugeView::kSingleGauge:
     _gaugeViewUpdated ? _drawSingle() : _refreshSingle();
     break;
   default:
-    Serial.print(_currentGaugeView);
+    Serial.print(int(_currentGaugeView));
     Serial.print(" is not a valid gauge index!\n");
   }
 
@@ -58,12 +57,12 @@ void DisplayHandler::moveGaugeCursor(int gaugeIndex)
 {
   switch (_currentGaugeView)
   {
-  case kQuadGauge:
+  case GaugeView::kQuadGauge:
     _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     _gaugeCursorIndex = gaugeIndex;
     _highlightQuadGauge(GC9A01A_BLACK, GC9A01A_WHITE);
     break;
-  case kDualGauge:
+  case GaugeView::kDualGauge:
     _highlightDualGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     _gaugeCursorIndex = gaugeIndex;
     _highlightDualGauge(GC9A01A_BLACK, GC9A01A_WHITE);
@@ -77,10 +76,10 @@ void DisplayHandler::clearGaugeCursor()
 {
   switch (_currentGaugeView)
   {
-  case kQuadGauge:
+  case GaugeView::kQuadGauge:
     _highlightQuadGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     break;
-  case kDualGauge:
+  case GaugeView::kDualGauge:
     _highlightDualGauge(GC9A01A_WHITE, GC9A01A_BLACK);
     break;
   default:
@@ -116,7 +115,13 @@ GaugeView DisplayHandler::getCurrentView()
 // Refreshes the data on a by digit basis given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
-  _tft.setTextSize(fontSize);
+  _tft.setTextSize(int(fontSize));
+
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
 
   // To avoid flickering:
   // - Only update the data if it has changed
@@ -156,7 +161,13 @@ void DisplayHandler::_refreshData(int dataIndex, FontSize fontSize, int cursorX,
 // Draws the data given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
-  _tft.setTextSize(fontSize);
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  _tft.setTextSize(int(fontSize));
   _tft.setTextColor(GC9A01A_WHITE);
 
   _tft.setCursor(cursorX - _getCenterOffset(fontSize, _currentData[dataIndex].second.length()), cursorY);
@@ -166,40 +177,75 @@ void DisplayHandler::_drawData(int dataIndex, FontSize fontSize, int cursorX, in
 // Draws the label given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_drawLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY)
 {
-  _tft.setTextSize(fontSize);
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  _tft.setTextSize(int(fontSize));
   _tft.setTextColor(GC9A01A_WHITE);
 
-  _tft.setCursor(cursorX - _getCenterOffset(fontSize, GaugeLabels[_currentData[dataIndex].first].length()), cursorY);
-  _tft.println(GaugeLabels[_currentData[dataIndex].first]);
+  _tft.setCursor(cursorX - _getCenterOffset(fontSize, GaugeLabels[int(_currentData[dataIndex].first)].length()),
+                 cursorY);
+  _tft.println(GaugeLabels[int(_currentData[dataIndex].first)]);
+}
+
+// Draws an icon if the data at the current index is active.
+void DisplayHandler::_drawIcon(int dataIndex, const uint8_t* bitmap, int iconHeight, int iconWidth, int cursorX,
+                               int cursorY, int color)
+{
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  if (_currentData[dataIndex].second == 1)
+  {
+    _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, color);
+  }
+  else
+  {
+    _tft.drawBitmap(cursorX, cursorY, bitmap, iconWidth, iconHeight, GC9A01A_BLACK);
+  }
 }
 
 // Highlights the label given the data center X coordinate and top Y coordinate.
 void DisplayHandler::_highlightLabel(int dataIndex, FontSize fontSize, int cursorX, int cursorY, uint16_t textColor,
                                      uint16_t backgroundColor)
 {
-  _tft.setTextSize(fontSize);
+  _tft.setTextSize(int(fontSize));
   _tft.setTextColor(textColor);
 
-  _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[_currentData[dataIndex].first].length()) - 1,
-                cursorY - 1, _getFontWidth(kFontSizeMedium) * GaugeLabels[_currentData[dataIndex].first].length(),
-                _getFontHeight(kFontSizeMedium), backgroundColor);
-  _tft.setCursor(cursorX - _getCenterOffset(kFontSizeMedium, GaugeLabels[_currentData[dataIndex].first].length()),
-                 cursorY);
-  _tft.println(GaugeLabels[_currentData[dataIndex].first]);
+  if ((unsigned int)dataIndex >= _currentData.size())
+  {
+    Serial.println("Data index outside of range!");
+    return;
+  }
+
+  _tft.fillRect(cursorX - _getCenterOffset(fontSize, GaugeLabels[int(_currentData[dataIndex].first)].length()) - 1,
+                cursorY - 1,
+                _getFontWidth(FontSize::kFontSizeMedium) * GaugeLabels[int(_currentData[dataIndex].first)].length(),
+                _getFontHeight(FontSize::kFontSizeMedium), backgroundColor);
+  _tft.setCursor(
+      cursorX - _getCenterOffset(FontSize::kFontSizeMedium, GaugeLabels[int(_currentData[dataIndex].first)].length()),
+      cursorY);
+  _tft.println(GaugeLabels[int(_currentData[dataIndex].first)]);
 }
 
 // Returns the width in pixels of a given font size
 int DisplayHandler::_getFontWidth(FontSize fontSize) const
 {
   // Font width grows in multiples of 6
-  return fontSize * 6;
+  return int(fontSize) * 6;
 }
 
 // Returns the height in pixels of a given font size
 int DisplayHandler::_getFontHeight(FontSize fontSize) const
 {
   // Font height grows in multiples of 8
-  return fontSize * 8;
+  return int(fontSize) * 8;
 }
 
 // Returns the offset needed to center text at a given coordinate
@@ -208,16 +254,67 @@ int DisplayHandler::_getCenterOffset(FontSize fontSize, int length) const
   return (length * _getFontWidth(fontSize)) / 2;
 }
 
-void DisplayHandler::_displayDashboard()
+void DisplayHandler::_drawDashboard()
 {
   clearScreen();
 
-  _tft.setTextSize(kFontSizeMedium);
-  _tft.setTextColor(GC9A01A_WHITE);
+  if (_currentData.size() < 5)
+  {
+    Serial.println("Current data has less than 5 gauges!");
+  }
 
-  _tft.setCursor(5, _screenHeight / 2);
+  _drawData(0, FontSize::kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) - 90);
+  _drawLabel(0, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 60);
 
-  _tft.println("Dashboard goes here!");
+  _drawData(1, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 40);
+  _drawLabel(1, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 10);
+
+  _drawData(2, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 20);
+  _drawLabel(2, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 50);
+
+  _drawData(3, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 40);
+  _drawLabel(3, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 10);
+
+  _drawData(4, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
+  _drawLabel(4, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 50);
+
+  _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_YELLOW);
+  _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
+}
+
+void DisplayHandler::_refreshDashboard()
+{
+  if (_dataUpdated)
+  {
+    if (_oldData[0].second != _currentData[0].second)
+    {
+      _refreshData(0, FontSize::kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) - 90);
+    }
+    if (_oldData[1].second != _currentData[1].second)
+    {
+      _refreshData(1, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 40);
+    }
+    if (_oldData[2].second != _currentData[2].second)
+    {
+      _refreshData(2, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 20);
+    }
+    if (_oldData[3].second != _currentData[3].second)
+    {
+      _refreshData(3, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 40);
+    }
+    if (_oldData[4].second != _currentData[4].second)
+    {
+      _refreshData(4, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 20);
+    }
+    if (_oldData[5].second != _currentData[5].second)
+    {
+      _drawIcon(5, fan_icon, 32, 32, _screenWidth - (_screenWidth / 4) - 30, (_screenHeight / 2) + 72, GC9A01A_YELLOW);
+    }
+    if (_oldData[6].second != _currentData[6].second)
+    {
+      _drawIcon(6, cold_icon, 32, 32, (_screenWidth / 2) - 16, (_screenHeight / 2) + 80, GC9A01A_BLUE);
+    }
+  }
 }
 
 void DisplayHandler::_drawQuad()
@@ -232,15 +329,15 @@ void DisplayHandler::_drawQuad()
     Serial.println("Current data has less than 4 gauges!");
   }
 
-  _drawLabel(0, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20);
-  _drawLabel(1, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 20);
-  _drawLabel(2, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6);
-  _drawLabel(3, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 6);
+  _drawLabel(0, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20);
+  _drawLabel(1, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 20);
+  _drawLabel(2, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6);
+  _drawLabel(3, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 6);
 
-  _drawData(0, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 50);
-  _drawData(1, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 50);
-  _drawData(2, kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 30);
-  _drawData(3, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 30);
+  _drawData(0, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) - 50);
+  _drawData(1, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 50);
+  _drawData(2, FontSize::kFontSizeLarge, _screenWidth / 4, (_screenHeight / 2) + 30);
+  _drawData(3, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 30);
 }
 
 // Refreshes changed data on the 4 gauge view.
@@ -250,19 +347,19 @@ void DisplayHandler::_refreshQuad()
   {
     if (_oldData[0].second != _currentData[0].second)
     {
-      _refreshData(0, kFontSizeLarge, (_screenWidth / 4), (_screenHeight / 2) - 50);
+      _refreshData(0, FontSize::kFontSizeLarge, (_screenWidth / 4), (_screenHeight / 2) - 50);
     }
     if (_oldData[1].second != _currentData[1].second)
     {
-      _refreshData(1, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 50);
+      _refreshData(1, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 50);
     }
     if (_oldData[2].second != _currentData[2].second)
     {
-      _refreshData(2, kFontSizeLarge, (_screenWidth / 4), (_screenHeight / 2) + 30);
+      _refreshData(2, FontSize::kFontSizeLarge, (_screenWidth / 4), (_screenHeight / 2) + 30);
     }
     if (_oldData[3].second != _currentData[3].second)
     {
-      _refreshData(3, kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 30);
+      _refreshData(3, FontSize::kFontSizeLarge, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 30);
     }
   }
 }
@@ -278,11 +375,11 @@ void DisplayHandler::_drawDual()
     Serial.println("Current data has less than 2 gauges!");
   }
 
-  _drawLabel(0, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20);
-  _drawLabel(1, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6);
+  _drawLabel(0, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20);
+  _drawLabel(1, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6);
 
-  _drawData(0, kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) - 75);
-  _drawData(1, kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) + 55);
+  _drawData(0, FontSize::kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) - 75);
+  _drawData(1, FontSize::kFontSizeXL, _screenWidth / 2, (_screenHeight / 2) + 55);
 }
 
 // Refreshes changed data on the 2 gauge view.
@@ -292,11 +389,11 @@ void DisplayHandler::_refreshDual()
   {
     if (_oldData[0].second != _currentData[0].second)
     {
-      _refreshData(0, kFontSizeXL, (_screenWidth / 2), (_screenHeight / 2) - 75);
+      _refreshData(0, FontSize::kFontSizeXL, (_screenWidth / 2), (_screenHeight / 2) - 75);
     }
     if (_oldData[1].second != _currentData[1].second)
     {
-      _refreshData(1, kFontSizeXL, (_screenWidth / 2), (_screenHeight / 2) + 55);
+      _refreshData(1, FontSize::kFontSizeXL, (_screenWidth / 2), (_screenHeight / 2) + 55);
     }
   }
 }
@@ -310,9 +407,9 @@ void DisplayHandler::_drawSingle()
     Serial.println("Current data has less than 1 gauge!");
   }
 
-  _drawLabel(0, kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) + 55);
+  _drawLabel(0, FontSize::kFontSizeLarge, _screenWidth / 2, (_screenHeight / 2) + 55);
 
-  _drawData(0, kFontSizeXXXL, _screenWidth / 2, (_screenHeight / 2) - 70);
+  _drawData(0, FontSize::kFontSizeXXXL, _screenWidth / 2, (_screenHeight / 2) - 70);
 }
 
 // Refreshes changed data on the 1 gauge view.
@@ -322,7 +419,7 @@ void DisplayHandler::_refreshSingle()
   {
     if (_oldData[0].second != _currentData[0].second)
     {
-      _refreshData(0, kFontSizeXXXL, (_screenWidth / 2), (_screenHeight / 2) - 70);
+      _refreshData(0, FontSize::kFontSizeXXXL, (_screenWidth / 2), (_screenHeight / 2) - 70);
     }
   }
 }
@@ -333,20 +430,20 @@ void DisplayHandler::_highlightQuadGauge(uint16_t textColor, uint16_t background
   switch (_gaugeCursorIndex)
   {
   case 0:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20, textColor,
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) - 20, textColor,
                     backgroundColor);
     break;
   case 1:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) - 20,
-                    textColor, backgroundColor);
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4),
+                    (_screenHeight / 2) - 20, textColor, backgroundColor);
     break;
   case 2:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6, textColor,
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth / 4, (_screenHeight / 2) + 6, textColor,
                     backgroundColor);
     break;
   case 3:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth - (_screenWidth / 4), (_screenHeight / 2) + 6,
-                    textColor, backgroundColor);
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth - (_screenWidth / 4),
+                    (_screenHeight / 2) + 6, textColor, backgroundColor);
     break;
   }
 }
@@ -357,11 +454,11 @@ void DisplayHandler::_highlightDualGauge(uint16_t textColor, uint16_t background
   switch (_gaugeCursorIndex)
   {
   case 0:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20, textColor,
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) - 20, textColor,
                     backgroundColor);
     break;
   case 1:
-    _highlightLabel(_gaugeCursorIndex, kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6, textColor,
+    _highlightLabel(_gaugeCursorIndex, FontSize::kFontSizeMedium, _screenWidth / 2, (_screenHeight / 2) + 6, textColor,
                     backgroundColor);
     break;
   }
